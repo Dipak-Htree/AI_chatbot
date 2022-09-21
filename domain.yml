@@ -1,0 +1,158 @@
+version: "3.1"
+
+intents:
+  - greet
+  - inform
+  - goodbye
+  - affirm
+  - deny
+  - bot_challenge
+  - inform_locality
+  - inform_budget
+  - take_name
+  - take_email
+  - inform_property_list
+  - informbudget
+  - property_flat
+  - property_villa
+
+
+entities:
+  - choice_locality
+  - choice_budget
+  - name
+  - email
+  - property_list
+  - budget
+
+
+
+slots:
+  choice_locality:
+    type: categorical
+    values:
+      - A
+      - B
+      - C
+      - D
+      - E
+      - F
+      - G
+      - H
+      - I
+      - J
+    mappings:
+    - type: from_entity
+      entity: choice_locality
+  
+  choice_budget:
+    type: categorical
+    values:
+      - A
+      - B
+      - C
+      - D
+    mappings:
+    - type: from_entity
+      entity: choice_budget
+
+  name:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: name
+    
+  
+  email:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: email
+    
+responses:
+  utter_goodbye:
+  - text: "Bye"
+
+  utter_iamabot:
+  - text: "I am a bot, powered by Rasa."
+
+  utter_play:
+  - text: "Type 'rock' , 'paper' or 'scissors' to play."
+
+  utter_play_again:
+  - text: "Do you want to play again?"
+
+  utter_property_headline:
+  - text: "We see that you are looking to Buy a Flat in Ahmedabad."
+
+  utter_locality:
+  - text: "Which Locality are you looking to Buy a Property in?\nA] South Bopal\tB]Shela\tc] SG Highway\tD] Bodakdeb\tE] Gota\tF] Thaltej \tG]Satellite\t H] Prahlad Nagar \t I]bopal\t J] vastrapur"
+
+  utter_budget:
+  # - text: "Great! Can you share your preferred budget?\nA] 20- 40 Lakhs\tB] 40 - 60 Lakhs\tC]60 - 80 Lakhs\tD]80 - 1 Cr"
+  - text: "Great! Can you share your preferred budget?"
+    buttons:
+    - title: "A] 20-40 Lakhs"
+      payload: /informbudget{{budget:"AA"}}
+    - title: "B] 40-60 Lakhs"
+      payload: /informbudget{{budget:"BB"}}
+    - title: "C] 60-80 Lakhs"
+      payload: /informbudget{{budget:"CC"}}
+    - title: "D] More than 80 Lakhs"
+      payload: /informbudget{{budget:"DD"}}
+
+  utter_happy_share_ask_name:
+  - text: "We are all set to share the Best matching properties with you.\nPlease share your details with us. \nWhat is your full name?"
+
+
+  utter_email:
+  - text: "Please share your email address"
+
+  utter_property_list:
+  # - text: "Considering your budget, we have finalised this property for you.\nA] \tB]  \tC]  \tD]  \tE]  \tF]  "
+  - text: Looking at your budget and locality, we have list down some properties for you.
+    buttons:
+    - title: "A] abc"
+      payload: /inform_property_list{{"property_list":"A"}}
+    - title: "B] xyz"
+      payload: /inform_property_list{{"property_list":"B"}}
+    - title: "C] pqr"
+      payload: /inform_property_list{{"property_list":"C"}}
+    - title: "D] def"
+      payload: /inform_property_list{{"property_list":"D"}}
+
+
+  utter_detail_varification:
+  - text: "Mr {name}. \nThank you for giving your details."
+
+  utter_property_varification:
+  - text: "You have selected this {budget}. \nYou have shown interest in this property. #Mention property"
+
+  utter_villa:
+  - text: "yes, this is a villa."
+  - text: "yes"
+  - text: "No"
+  - text: "No, this is not a villa"
+
+  utter_flat:
+  - text: "Yes, this is a flat"
+  - text: "Yes"
+  - text: "No"
+  - text: "No this is not a flat."
+
+
+  utter_DEFAULT_FALLBACK:
+    - text: "Sorry, we don't have that information."
+  
+
+# actions:
+#   - action_play_rps
+#   - action_locality
+#   - action_budget
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+
+config:
+  store_entities_as_slots: true

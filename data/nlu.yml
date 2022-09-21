@@ -1,0 +1,120 @@
+version: "3.1"
+
+nlu:
+
+- intent: inform_locality
+  examples: |
+    - [A](choice_locality)
+    - [B](choice_locality)
+    - [C](choice_locality)
+    - [D](choice_locality)
+    - [E](choice_locality)
+    - [F](choice_locality)
+    - [G](choice_locality)
+    - [H](choice_locality)
+    - [J](choice_locality)
+
+- intent: informbudget
+  examples: |
+    - [AA](budget)
+    - [BB](budget)
+    - [CC](budget)
+    - [DD](budget)
+
+- intent: take_name
+  examples: |
+    - [dipak](name)
+    - [selvin mecwan](name)
+    - [ali hussain](name)
+    - [rajesh khanna](name)
+    - [amitabh](name)
+    - [suresh](name)
+    - My name is [Dipak](name)
+    - name [abc](name)
+    
+
+- intent: take_email
+  examples: |
+    - [abc@gmail.com](email)
+    - [unknown.known@yahoo.com](email)
+    - This my email address. [abc@mail.com](email)
+    - My email is [pqr@gmail.com]
+
+
+- intent: greet
+  examples: |
+    - hey
+    - hello
+    - hi
+    - hello there
+    - good morning
+    - good evening
+    - moin
+    - hey there
+    - let's go
+    - hey dude
+    - goodmorning
+    - goodevening
+    - good afternoon
+
+- intent: goodbye
+  examples: |
+    - cu
+    - good by
+    - cee you later
+    - good night
+    - bye
+    - goodbye
+    - have a nice day
+    - see you around
+    - bye bye
+    - see you later
+
+- intent: affirm
+  examples: |
+    - yes
+    - y
+    - indeed
+    - of course
+    - that sounds good
+    - correct
+
+- intent: deny
+  examples: |
+    - no
+    - n
+    - never
+    - I don't think so
+    - don't like that
+    - no way
+    - not really
+
+
+
+- intent: bot_challenge
+  examples: |
+    - are you a bot?
+    - are you a human?
+    - am I talking to a bot?
+    - am I talking to a human?
+
+
+- intent: inform_property_list
+  examples: |
+    - [A](property_list)
+    - [B](property_list)
+    - [C](property_list)
+    - [D](property_list)
+
+
+- intent: property_villa
+  examples: |
+    - is this property a villa?
+    - Does this property is a villa type?
+    - Is this a villa?
+    
+- intent: property_flat
+  examples: |
+    - Is this property a flat?
+    - Does this property a flat?
+    - Is this a flat?

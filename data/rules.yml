@@ -1,0 +1,50 @@
+version: "3.1"
+
+rules:
+
+- rule: after name, ask email
+  steps:
+  - intent: take_name
+  - action: utter_email
+
+- rule: after email, ask property
+  steps:
+  - intent: take_email
+  - action: utter_detail_varification
+  - action: utter_budget
+
+- rule: after inform budget, utter_property list
+  steps:
+  - intent: informbudget
+  - action: utter_property_list
+
+
+- rule: after informing property, varify it.
+  steps:
+  - intent: inform_property_list
+  - action: utter_property_varification
+
+
+
+
+
+
+
+
+
+
+  # - intent: inform_locality
+  # - action: utter_happy_share_ask_name
+  # - intent: take_name
+  # - action: utter_email
+  # - intent: take_email
+
+# - rule: Say goodbye anytime the user says goodbye
+#   steps:
+#   - intent: goodbye
+#   - action: utter_goodbye
+
+# - rule: Say 'I am a bot' anytime the user challenges
+#   steps:
+#   - intent: bot_challenge
+#   - action: utter_iamabot
