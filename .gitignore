@@ -128,8 +128,14 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+
+models/
+.rasa/
+
 # Pyre type checker
 .pyre/
 
 
-models/
+
+
+
