@@ -21,8 +21,15 @@ rules:
 
 - rule: after informing property, varify it.
   steps:
-  - intent: inform_property_list
+  - intent: informpropertylist
   - action: utter_property_varification
+  - action: utter_agency_list
+
+- rule: after informing agency, varify it
+  steps:
+  - intent: inform_agency_list
+  - action: utter_agency_varification
+  
 
 
 

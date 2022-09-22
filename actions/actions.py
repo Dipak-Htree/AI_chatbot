@@ -1,3 +1,4 @@
+from argparse import Action
 from typing import Dict, Text, Any, List
 import csv
 from rasa_sdk import Tracker
@@ -45,5 +46,23 @@ def run(self,
     else: # the list is empty
 
         dispatcher.utter_message(f"I could not this in {location}")
+
+
+
+# class ActionService(Action):
+#     def name(self) -> Text:
+#         return "action_service"
+    
+#     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+
+#         data=[{"title":"A] 20-40 Lakhs","payload":"/informbudget{'budget':'AA'}"},
+#             {"title":"B] 40-60 Lakhs","payload":"/informbudget{'budget':'BB'}"},
+#             {"title":"C] 60-80 Lakhs","payload":"/informbudget{'budget':'CC'}"},
+#             # {"title":"D] More than 80 Lakhs","payload":"/informbudget{'budget':'DD'}"},
+#             ]
+
+#         message={"payload":"dropDown","data":data}
+        
+#         dispatcher.utter_message(text="Please select a option",json_message=message)
 
  

@@ -1,158 +1,187 @@
-version: "3.1"
-
+version: '3.0'
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
 intents:
-  - greet
-  - inform
-  - goodbye
-  - affirm
-  - deny
-  - bot_challenge
-  - inform_locality
-  - inform_budget
-  - take_name
-  - take_email
-  - inform_property_list
-  - informbudget
-  - property_flat
-  - property_villa
-
-
+- greet
+- inform
+- goodbye
+- affirm
+- deny
+- bot_challenge
+- inform_locality
+- inform_budget
+- take_name
+- take_email
+- informpropertylist
+- informbudget
+- property_flat
+- property_villa
+- inform_agency_list
 entities:
-  - choice_locality
-  - choice_budget
-  - name
-  - email
-  - property_list
-  - budget
-
+- choice_locality
+- choice_budget
+- name
+- email
+- propertylist
+- budget
+- agency_list
 
 
 slots:
   choice_locality:
     type: categorical
-    values:
-      - A
-      - B
-      - C
-      - D
-      - E
-      - F
-      - G
-      - H
-      - I
-      - J
+    influence_conversation: true
     mappings:
     - type: from_entity
       entity: choice_locality
-  
-  choice_budget:
-    type: categorical
     values:
-      - A
-      - B
-      - C
-      - D
+    - a
+    - b
+    - c
+    - d
+    - e
+    - f
+    - g
+    - h
+    - i
+    - j
+  budget:
+    type: categorical
+    influence_conversation: true
     mappings:
     - type: from_entity
-      entity: choice_budget
+      entity: budget
+    values:
+    - aa
+    - bb
+    - cc
+    - dd
+
+  propertylist:
+    type: categorical
+    influence_conversation: true 
+    mappings: 
+    - type: from_entity
+      entity: propertylist
+    values:
+    - a
+    - b
+    - c
+    - d
+  
+  agency_list:
+    type: categorical
+    influence_conversation: true 
+    mappings: 
+    - type: from_entity
+      entity: agency_list
+    values:
+    - a
+    - b
+    - c
+    - d 
 
   name:
     type: text
+    influence_conversation: true
     mappings:
-      - type: from_entity
-        entity: name
-    
-  
+    - type: from_entity
+      entity: name
   email:
     type: text
+    influence_conversation: true
     mappings:
-      - type: from_entity
-        entity: email
-    
+    - type: from_entity
+      entity: email
 responses:
   utter_goodbye:
-  - text: "Bye"
-
+  - text: Bye
   utter_iamabot:
-  - text: "I am a bot, powered by Rasa."
-
+  - text: I am a bot, powered by Rasa.
   utter_play:
-  - text: "Type 'rock' , 'paper' or 'scissors' to play."
-
+  - text: Type 'rock' , 'paper' or 'scissors' to play.
   utter_play_again:
-  - text: "Do you want to play again?"
-
+  - text: Do you want to play again?
   utter_property_headline:
-  - text: "We see that you are looking to Buy a Flat in Ahmedabad."
-
+  - text: We see that you are looking to Buy a Flat in Ahmedabad.
   utter_locality:
-  - text: "Which Locality are you looking to Buy a Property in?\nA] South Bopal\tB]Shela\tc] SG Highway\tD] Bodakdeb\tE] Gota\tF] Thaltej \tG]Satellite\t H] Prahlad Nagar \t I]bopal\t J] vastrapur"
-
+  - text: |-
+      Which Locality are you looking to Buy a Property in?
+      A] South Bopal	B]Shela	c] SG Highway	D] Bodakdeb	E] Gota	F] Thaltej 	G]Satellite	 H] Prahlad Nagar 	 I]bopal	 J] vastrapur
   utter_budget:
-  # - text: "Great! Can you share your preferred budget?\nA] 20- 40 Lakhs\tB] 40 - 60 Lakhs\tC]60 - 80 Lakhs\tD]80 - 1 Cr"
-  - text: "Great! Can you share your preferred budget?"
-    buttons:
-    - title: "A] 20-40 Lakhs"
-      payload: /informbudget{{budget:"AA"}}
-    - title: "B] 40-60 Lakhs"
-      payload: /informbudget{{budget:"BB"}}
-    - title: "C] 60-80 Lakhs"
-      payload: /informbudget{{budget:"CC"}}
-    - title: "D] More than 80 Lakhs"
-      payload: /informbudget{{budget:"DD"}}
+  - buttons:
+    - payload: /informbudget{{"budget":"20-40 Lakhs"}}
+      title: A] 20-40 Lakhs
+    - payload: /informbudget{{"budget":"40-60 Lakhs"}}
+      title: B] 40-60 Lakhs
+    - payload: /informbudget{{"budget":"60-80 Lakhs"}}
+      title: C] 60-80 Lakhs
+    - payload: /informbudget{{"budget":"More than 80 Lakhs"}}
+      title: D] More than 80 Lakhs
+    text: Great! Can you share your preferred budget?
 
   utter_happy_share_ask_name:
-  - text: "We are all set to share the Best matching properties with you.\nPlease share your details with us. \nWhat is your full name?"
-
-
+  - text: |-
+      We are all set to share the Best matching properties with you.
+      Please share your details with us. 
+      What is your full name?
   utter_email:
-  - text: "Please share your email address"
+  - text: Please share your email address
 
   utter_property_list:
-  # - text: "Considering your budget, we have finalised this property for you.\nA] \tB]  \tC]  \tD]  \tE]  \tF]  "
-  - text: Looking at your budget and locality, we have list down some properties for you.
-    buttons:
-    - title: "A] abc"
-      payload: /inform_property_list{{"property_list":"A"}}
-    - title: "B] xyz"
-      payload: /inform_property_list{{"property_list":"B"}}
-    - title: "C] pqr"
-      payload: /inform_property_list{{"property_list":"C"}}
-    - title: "D] def"
-      payload: /inform_property_list{{"property_list":"D"}}
-
-
+  - buttons:
+    - payload: /informpropertylist{{"propertylist":"abc"}}
+      title: A] abc
+    - payload: /informpropertylist{{"propertylist":"xyz"}}
+      title: B] xyz
+    - payload: /informpropertylist{{"propertylist":"pqr"}}
+      title: C] pqr
+    - payload: /informpropertylist{{"propertylist":"def"}}
+      title: D] def
+    text: Looking at your budget and locality, we have list down some properties for you.
+ 
   utter_detail_varification:
-  - text: "Mr {name}. \nThank you for giving your details."
+  - text: |-
+      Mr {name}. 
+      Thank you for giving your details.
 
+  utter_agency_list:
+  - buttons:
+    - payload: /inform_agency_list{{"agency_list":"Agency A"}}
+      title: A] Agency A
+    - payload: /inform_agency_list{{"agency_list":"Agency B"}}
+      title: B] Agency B
+    - payload: /inform_agency_list{{"agency_list":"Agency C"}}
+      title: C] Agency C
+    - payload: /inform_agency_list{{"agency_list":"Agency D"}}
+      title: D] Agency D
+    text: Can you please choose on of the agency from below ?
+
+  utter_agency_varification:
+  - text: You have chose {agency_list}.
+  
   utter_property_varification:
-  - text: "You have selected this {budget}. \nYou have shown interest in this property. #Mention property"
+  - text: |-
+      You have selected this {budget}. 
+      You have selected this {propertylist}. 
+      You have shown interest in this property. #Mention property
 
   utter_villa:
-  - text: "yes, this is a villa."
-  - text: "yes"
-  - text: "No"
-  - text: "No, this is not a villa"
+  - text: yes, this is a villa.
+  - text: yes
+  - text: No
+  - text: No, this is not a villa
 
   utter_flat:
-  - text: "Yes, this is a flat"
-  - text: "Yes"
-  - text: "No"
-  - text: "No this is not a flat."
-
+  - text: Yes, this is a flat
+  - text: Yes
+  - text: No
+  - text: No this is not a flat.
 
   utter_DEFAULT_FALLBACK:
-    - text: "Sorry, we don't have that information."
-  
+  - text: Sorry, we don't have that information.
 
-# actions:
-#   - action_play_rps
-#   - action_locality
-#   - action_budget
 
-session_config:
-  session_expiration_time: 60
-  carry_over_slots_to_new_session: true
-
-config:
-  store_entities_as_slots: true
+actions:
+- action_service

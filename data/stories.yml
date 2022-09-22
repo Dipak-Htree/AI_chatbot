@@ -13,8 +13,11 @@ stories:
   - action: utter_budget
   - intent: informbudget
   - action: utter_property_list
-  - intent: inform_property_list
+  - intent: informpropertylist
   - action: utter_property_varification
+  - action: utter_agency_list
+  - intent: inform_agency_list
+  - action: utter_agency_varification
 
 - story: some property related info
   steps:

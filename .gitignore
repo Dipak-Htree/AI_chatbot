@@ -130,7 +130,8 @@ dmypy.json
 
 
 models/
-.rasa/
+**/.rasa
+Jupyter_Notebook_Test/
 
 # Pyre type checker
 .pyre/

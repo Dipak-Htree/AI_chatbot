@@ -99,12 +99,19 @@ nlu:
     - am I talking to a human?
 
 
-- intent: inform_property_list
+- intent: informpropertylist
   examples: |
-    - [A](property_list)
-    - [B](property_list)
-    - [C](property_list)
-    - [D](property_list)
+    - [A](propertylist)
+    - [B](propertylist)
+    - [C](propertylist)
+    - [D](propertylist)
+
+- intent: inform_agency_list
+  examples: |
+    - [A](agency_list)
+    - [B](agency_list)
+    - [C](agency_list)
+    - [D](agency_list)
 
 
 - intent: property_villa
