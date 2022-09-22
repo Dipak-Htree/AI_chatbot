@@ -1,7 +1,7 @@
 version: '3.0'
-session_config:
-  session_expiration_time: 60
-  carry_over_slots_to_new_session: true
+
+
+
 intents:
 - greet
 - inform
@@ -18,6 +18,8 @@ intents:
 - property_flat
 - property_villa
 - inform_agency_list
+
+
 entities:
 - choice_locality
 - choice_budget
@@ -26,6 +28,7 @@ entities:
 - propertylist
 - budget
 - agency_list
+- choice
 
 
 slots:
@@ -72,15 +75,18 @@ slots:
   
   agency_list:
     type: categorical
+    values:
+      - A1
+      - A2
+      - A3
+      - B1
+      - B2
+      - B3 
     influence_conversation: true 
     mappings: 
     - type: from_entity
       entity: agency_list
-    values:
-    - a
-    - b
-    - c
-    - d 
+ 
 
   name:
     type: text
@@ -94,6 +100,18 @@ slots:
     mappings:
     - type: from_entity
       entity: email
+  
+  choice:
+    type: categorical
+    values:
+      - rock
+      - paper
+      - sci
+    mappings: 
+    - type: from_entity
+      entity: choice
+
+
 responses:
   utter_goodbye:
   - text: Bye
@@ -148,18 +166,22 @@ responses:
 
   utter_agency_list:
   - buttons:
-    - payload: /inform_agency_list{{"agency_list":"Agency A"}}
-      title: A] Agency A
-    - payload: /inform_agency_list{{"agency_list":"Agency B"}}
-      title: B] Agency B
-    - payload: /inform_agency_list{{"agency_list":"Agency C"}}
-      title: C] Agency C
-    - payload: /inform_agency_list{{"agency_list":"Agency D"}}
-      title: D] Agency D
+    - payload: /inform_agency_list{{"agency_list":"Agency A1"}}
+      title: A] Agency A1
+    - payload: /inform_agency_list{{"agency_list":"Agency A2"}}
+      title: B] Agency A2
+    - payload: /inform_agency_list{{"agency_list":"Agency A3"}}
+      title: C] Agency A3
+    - payload: /inform_agency_list{{"agency_list":"Agency B1"}}
+      title: D] Agency B1
+    - payload: /inform_agency_list{{"agency_list":"Agency B2"}}
+      title: D] Agency B2
+    - payload: /inform_agency_list{{"agency_list":"Agency B3"}}
+      title: D] Agency B3
     text: Can you please choose on of the agency from below ?
 
   utter_agency_varification:
-  - text: You have chose {agency_list}.
+  - text: You have chose.
   
   utter_property_varification:
   - text: |-
@@ -179,9 +201,15 @@ responses:
   - text: No
   - text: No this is not a flat.
 
+
+
   utter_DEFAULT_FALLBACK:
   - text: Sorry, we don't have that information.
 
 
 actions:
-- action_service
+- action_find_properties_for_agencies
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

@@ -1,52 +1,24 @@
-from argparse import Action
+from cgitb import text
 from typing import Dict, Text, Any, List
 import csv
-from rasa_sdk import Tracker
+from rasa_sdk import Tracker, Action
 from rasa_sdk.executor import CollectingDispatcher
+import pandas as pd
+
+class GetAnswer(Action):
+    def name(self) -> Text:
+        return "action_find_properties_for_agencies"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        data = pd.read_excel('/home/fx/Dev/AI_chatbot/Excel_File/Agent_Information.ods', engine='odf')
+        # df = data[data["Agent"] == {'agency_list'}]
 
 
-def name(self) -> Text:
 
-    return "action_findengr"
-
-def run(self,
-
-        dispatcher: CollectingDispatcher,
-
-        tracker: Tracker,
-
-        domain: Dict[Text, Any]
-
-    ) -> List[Dict[Text, Any]]:
-
-    # get the location slot
-
-    location = tracker.get_slot('location')
-
-    # read the CSV file
-
-    with open('C:\\Users\\om sai infotech\\OneDrive\\Desktop\\bot\\actions\\financial.csv','r',encoding = "utf-8") as file:
-
-        reader = csv.DictReader(file)
-
-        # get a list of universities in the desired location
-
-        output = [row for row in reader if row['Location'] == location]
-
-    if output:
-
-        reply  = f"Output: {location}:"
-
-        reply += "\n- " + "\n- ".join([item['S.No.','date','firm','Ticker','Research Development','Income Before Tax','Net Income','Selling General Administrative','Gross Profit','Ebit','Operating Income','Interest Expense','Income Tax Expense','Total Revenue','Total Operating Expenses','Cost Of Revenue','Total Other Income Expense Net','Net Income From Continuing Ops','Net Income Applicable To Common Shares'] for item in output])
-
-        # utter the message
-
-        dispatcher.utter_message(reply)
-
-    else: # the list is empty
-
-        dispatcher.utter_message(f"I could not this in {location}")
-
+        agency = tracker.get_slot("agency_list")
+        # dispatcher.utter_message(text = f"hgh {Tracker.get_latest_entity_values('name')}")
+        dispatcher.utter_message(text=f"GetAnswer class is working properly {agency}")
+        return []
 
 
 # class ActionService(Action):

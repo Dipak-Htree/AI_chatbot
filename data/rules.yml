@@ -29,7 +29,8 @@ rules:
   steps:
   - intent: inform_agency_list
   - action: utter_agency_varification
-  
+  - action: action_find_properties_for_agencies
+
 
 
 

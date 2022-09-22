@@ -18,6 +18,7 @@ stories:
   - action: utter_agency_list
   - intent: inform_agency_list
   - action: utter_agency_varification
+  - action: action_find_properties_for_agencies
 
 - story: some property related info
   steps:
