@@ -1,7 +1,7 @@
 version: '3.0'
-
-
-
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
 intents:
 - greet
 - inform
@@ -18,7 +18,18 @@ intents:
 - property_flat
 - property_villa
 - inform_agency_list
-
+- inform_explore_property
+- property_floorplan
+- property_bedroom
+- ask_parking
+- ask_address
+- ask_garden
+- ask_website_link
+- ask_pet_info
+- ask_reception_info
+- ask_bathroom_info
+- ask_house_type_info
+ 
 
 entities:
 - choice_locality
@@ -29,8 +40,7 @@ entities:
 - budget
 - agency_list
 - choice
-
-
+- chosen_property
 slots:
   choice_locality:
     type: categorical
@@ -60,11 +70,10 @@ slots:
     - bb
     - cc
     - dd
-
   propertylist:
     type: categorical
-    influence_conversation: true 
-    mappings: 
+    influence_conversation: true
+    mappings:
     - type: from_entity
       entity: propertylist
     values:
@@ -72,22 +81,19 @@ slots:
     - b
     - c
     - d
-  
   agency_list:
     type: categorical
-    values:
-      - A1
-      - A2
-      - A3
-      - B1
-      - B2
-      - B3 
-    influence_conversation: true 
-    mappings: 
+    influence_conversation: true
+    mappings:
     - type: from_entity
       entity: agency_list
- 
-
+    values:
+    - a1
+    - a2
+    - a3
+    - b1
+    - b2
+    - b3
   name:
     type: text
     influence_conversation: true
@@ -100,18 +106,27 @@ slots:
     mappings:
     - type: from_entity
       entity: email
-  
   choice:
     type: categorical
-    values:
-      - rock
-      - paper
-      - sci
-    mappings: 
+    influence_conversation: true
+    mappings:
     - type: from_entity
       entity: choice
-
-
+    values:
+    - rock
+    - paper
+    - sci
+  chosen_property:
+    type: categorical
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: chosen_property
+    values:
+    - p1
+    - p1
+    - p2
+    - p2
 responses:
   utter_goodbye:
   - text: Bye
@@ -138,7 +153,6 @@ responses:
     - payload: /informbudget{{"budget":"More than 80 Lakhs"}}
       title: D] More than 80 Lakhs
     text: Great! Can you share your preferred budget?
-
   utter_happy_share_ask_name:
   - text: |-
       We are all set to share the Best matching properties with you.
@@ -146,7 +160,6 @@ responses:
       What is your full name?
   utter_email:
   - text: Please share your email address
-
   utter_property_list:
   - buttons:
     - payload: /informpropertylist{{"propertylist":"abc"}}
@@ -158,58 +171,59 @@ responses:
     - payload: /informpropertylist{{"propertylist":"def"}}
       title: D] def
     text: Looking at your budget and locality, we have list down some properties for you.
- 
   utter_detail_varification:
   - text: |-
       Mr {name}. 
       Thank you for giving your details.
-
   utter_agency_list:
   - buttons:
-    - payload: /inform_agency_list{{"agency_list":"Agency A1"}}
+    - payload: /inform_agency_list{{"agency_list":"A1"}}
       title: A] Agency A1
-    - payload: /inform_agency_list{{"agency_list":"Agency A2"}}
+    - payload: /inform_agency_list{{"agency_list":"A2"}}
       title: B] Agency A2
-    - payload: /inform_agency_list{{"agency_list":"Agency A3"}}
+    - payload: /inform_agency_list{{"agency_list":"A3"}}
       title: C] Agency A3
-    - payload: /inform_agency_list{{"agency_list":"Agency B1"}}
+    - payload: /inform_agency_list{{"agency_list":"B1"}}
       title: D] Agency B1
-    - payload: /inform_agency_list{{"agency_list":"Agency B2"}}
+    - payload: /inform_agency_list{{"agency_list":"B2"}}
       title: D] Agency B2
-    - payload: /inform_agency_list{{"agency_list":"Agency B3"}}
+    - payload: /inform_agency_list{{"agency_list":"B3"}}
       title: D] Agency B3
     text: Can you please choose on of the agency from below ?
-
   utter_agency_varification:
   - text: You have chose.
-  
   utter_property_varification:
   - text: |-
       You have selected this {budget}. 
       You have selected this {propertylist}. 
       You have shown interest in this property. #Mention property
-
   utter_villa:
   - text: yes, this is a villa.
   - text: yes
   - text: No
   - text: No, this is not a villa
-
   utter_flat:
   - text: Yes, this is a flat
   - text: Yes
   - text: No
   - text: No this is not a flat.
-
-
-
   utter_DEFAULT_FALLBACK:
   - text: Sorry, we don't have that information.
-
-
+  utter_explore_property:
+  - text: please, explore one of the below property.
+  utter_explore_property_varification:
+  - text: You have chosen this {chosen_property} property.
 actions:
 - action_find_properties_for_agencies
-
-session_config:
-  session_expiration_time: 60
-  carry_over_slots_to_new_session: true
+- action_showing_property
+- action_check_villa_type
+- action_check_property_floorplan
+- action_check_bedroom
+- action_show_address
+- action_show_parking
+- action_show_garden
+- action_show_website_link
+- action_show_pet_info
+- action_check_reception_info
+- action_check_bathroom_info
+- action_check_house_type

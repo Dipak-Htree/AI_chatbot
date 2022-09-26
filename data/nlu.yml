@@ -125,3 +125,84 @@ nlu:
     - Is this property a flat?
     - Does this property a flat?
     - Is this a flat?
+  
+- intent: inform_explore_property
+  examples: |
+    - [P1](chosen_property)
+    - [P2](chosen_property)
+    - [p1](chosen_property)
+    - [p2](chosen_property)
+
+- intent: property_floorplan
+  examples: |
+    - What is the floorplan for this property?
+    - floorplan layout 
+    - Do you have floorplan layout?
+    - Can you give me property floorplan?
+
+- intent: property_bedroom
+  examples: |
+    - How many bedroom are there?
+    - Total how many bedroom does this property have?
+    - how many bedroom
+
+- intent: ask_address
+  examples: |
+    - CAn you show me address for this porperty?
+    - show me address?
+    - address
+    - What is the address for this property
+
+- intent: ask_parking
+  examples: |
+    - Is this property has parking?
+    - DOes it includes parking?
+    - parking
+
+- intent: ask_garden
+  examples: |
+    - Does this property have garden ?
+    - Is this building have garden?
+    - Garden ?
+    - Is there any garden?
+
+- intent: ask_website_link
+  examples: |
+    - Can you provide me link of this website?
+    - Give me link of the site.
+    - show me website link for this
+
+- intent: ask_pet_info
+  examples: |
+    - is is possible to stay with pet ?
+    - pet allowed here?
+    - does dogs allowed here?
+    - pets
+    - Is the property pet friendly?
+    - Is being the property not pet friendly a deal breaker?
+
+- intent: ask_reception_info
+  examples: |
+    - Does this property includes any type of receptions?
+    - Are reception is there?
+    - Do you have reception for this property?
+    - reception
+
+- intent: ask_bathroom_info
+  examples: |
+    - How many bathroom are there?
+    - Does this property includes any type of bathroom?
+    - bathroom
+    - How many bathrooms does the property have?
+
+- intent: ask_house_type_info
+  examples: |
+    - What is the house type
+    - house type for this property
+    - show me what type of house this?
+    - house type
+
+  
+
+
+

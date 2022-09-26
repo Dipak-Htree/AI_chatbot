@@ -132,7 +132,8 @@ dmypy.json
 models/
 **/.rasa
 Jupyter_Notebook_Test/
-
+blenderbot-3B/
+events*
 # Pyre type checker
 .pyre/
 
@@ -140,3 +141,4 @@ Jupyter_Notebook_Test/
 
 
 
+node_modules

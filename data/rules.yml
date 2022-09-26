@@ -30,6 +30,13 @@ rules:
   - intent: inform_agency_list
   - action: utter_agency_varification
   - action: action_find_properties_for_agencies
+  - action: utter_explore_property
+
+- rule: when user chooses property, show them property
+  steps:
+  - intent: inform_explore_property
+  - action: utter_explore_property_varification
+  - action: action_showing_property
 
 
 
