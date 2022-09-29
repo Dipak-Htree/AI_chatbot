@@ -15,8 +15,7 @@ intents:
 - take_email
 - informpropertylist
 - informbudget
-- property_flat
-- property_villa
+- property_type
 - inform_agency_list
 - inform_explore_property
 - property_floorplan
@@ -29,7 +28,8 @@ intents:
 - ask_reception_info
 - ask_bathroom_info
 - ask_house_type_info
- 
+- inform_answer_ask_help
+- inform_select_property
 
 entities:
 - choice_locality
@@ -41,6 +41,7 @@ entities:
 - agency_list
 - choice
 - chosen_property
+- house_type
 slots:
   choice_locality:
     type: categorical
@@ -127,6 +128,13 @@ slots:
     - p1
     - p2
     - p2
+  house_type:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: house_type
+
 responses:
   utter_goodbye:
   - text: Bye
@@ -207,16 +215,35 @@ responses:
   - text: Yes
   - text: No
   - text: No this is not a flat.
-  utter_DEFAULT_FALLBACK:
-  - text: Sorry, we don't have that information.
+ 
   utter_explore_property:
   - text: please, explore one of the below property.
   utter_explore_property_varification:
   - text: You have chosen this {chosen_property} property.
+
+  utter_ask_help:
+    - text: How,can I help you ?
+    - text: Let me know how can I help you ?
+    - text: I am here to show properties , how may I help you ?
+  
+  utter_show_properties:
+    - text: Ok, we are here to show you properties based on your requirement
+  
+  utter_select_property:
+  - text: Please select one of the following properties
+
+  utter_DEFAULT_FALLBACK:
+  - text: Sorry, we don't have that information.
+
+  utter_ask_any_questions:
+    - text: Do you need any help ?
+    - text: If you have any questions related to property you can ask me.
+
+
 actions:
 - action_find_properties_for_agencies
 - action_showing_property
-- action_check_villa_type
+- action_check_house_type
 - action_check_property_floorplan
 - action_check_bedroom
 - action_show_address
@@ -226,4 +253,4 @@ actions:
 - action_show_pet_info
 - action_check_reception_info
 - action_check_bathroom_info
-- action_check_house_type
+

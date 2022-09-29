@@ -1,21 +1,25 @@
+from cmath import cos
 from typing import Dict, Text, Any, List, Optional
 import csv
 from rasa_sdk import Tracker, Action
 from rasa_sdk.executor import CollectingDispatcher
 from rasa.core.nlg import NaturalLanguageGenerator as nlg
+from sentence_transformers import SentenceTransformer, util
 import pandas as pd
+import json
 
-property_data = pd.read_excel('/home/fx/Dev/AI_chatbot/Excel_File/Properties_Information.ods', engine='odf')
-agency_data =  pd.read_excel('/home/fx/Dev/AI_chatbot/Excel_File/Agent_Information.ods', engine='odf')
+data=pd.read_json('/home/fx/Dev/AI_chatbot/Excel_File/rightmove.json').T
+
+property_data = pd.read_excel('Excel_File/Properties_Information.ods', engine='odf')
+agency_data =  pd.read_excel('Excel_File/Agent_Information.ods', engine='odf')
 
 class Information(Action):
     def name(self) -> Text:
         return "action_information"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        
         chosen_property = tracker.get_slot('chosen_property')
-        self.property_detail = property_data[property_data['Properties'] == f'{chosen_property}']
+        self.property_detail = data.iloc[int(chosen_property)]
         return self.property_detail
 
 
@@ -58,14 +62,26 @@ class CheckVillaType(Information):
         super().__init__()
 
     def name(self) -> Text:
-        return "action_check_villa_type"
+        return "action_check_house_type"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         super().run(dispatcher, tracker, domain)
-        if 'villa' in self.property_detail['Type'].to_list(): 
-            dispatcher.utter_message(text=f"Yes, this property is villa type.")
-        else:
-            dispatcher.utter_message(text=f"No, this property is not villa type.")
+        house_type = self.property_detail['Property']['PROPERTY TYPE'].lower()
+        q_house_type = tracker.get_slot('house_type')
+        
+        model = SentenceTransformer('all-MiniLM-L6-v2')
+        embeddings1 = model.encode(house_type, convert_to_tensor=True)
+        embeddings2 = model.encode(q_house_type, convert_to_tensor=True)
+        
+        #Compute cosine-similarities
+        cosine_scores = util.cos_sim(embeddings1, embeddings2)
+        print(cosine_scores)
+        if cosine_scores[0][0].item() > 0.50:
+            dispatcher.utter_message(text=f"Yes, This property is {house_type}")
+        elif cosine_scores[0][0].item() < 0.50:
+            dispatcher.utter_message(text=f"No, This property is {house_type}")
+            
+
         return []
 
 
@@ -78,9 +94,9 @@ class CheckFloorPlan(Information):
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         super().run(dispatcher, tracker, domain)
-        print(self.property_detail['floorplan'].iloc[0])
-        if self.property_detail['floorplan'].iloc[0]: 
-            dispatcher.utter_message(text=f"Yes, this property has floorplan. Here is the link for it.\n {self.property_detail['floorplan'].iloc[0]}")
+        print(self.property_detail['Floorplan'].iloc[0])
+        if self.property_detail['Floorplan'].iloc[0]: 
+            dispatcher.utter_message(text=f"Yes, this property has floorplan. Here is the link for it.\n {self.property_detail['Floorplan'].iloc[0]}")
         else:
             dispatcher.utter_message(text=f"No, this property has no floorplan.")
         return []
@@ -95,9 +111,9 @@ class CheckBedroomNumber(Information):
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         super().run(dispatcher, tracker, domain)
-        print(self.property_detail['Bedroom'].iloc[0])
-        if self.property_detail['Bedroom'].iloc[0]: 
-            dispatcher.utter_message(text=f"There are total of {self.property_detail['Bedroom'].iloc[0]}")
+        if self.property_detail['Property'] is not None:
+             
+            dispatcher.utter_message(text=f"There are total of {self.property_detail['Property']['BEDROOMS']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -112,9 +128,9 @@ class CheckLocation(Information):
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         super().run(dispatcher, tracker, domain)
-        print(self.property_detail['Address'].iloc[0])
-        if self.property_detail['Address'].iloc[0]: 
-            dispatcher.utter_message(text=f"Here is the address for this property.\n{self.property_detail['Address'].iloc[0]}")
+        print(self.property_detail['Address'])
+        if self.property_detail['Address'] is not None: 
+            dispatcher.utter_message(text=f"Here is the address for this property.\n{self.property_detail['Address']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -225,21 +241,21 @@ class CheckBathroomInfo(Information):
         return []
 
 
-class CheckHouseInfo(Information):
-    def __init__(self):
-        super().__init__()
+# class CheckHouseInfo(Information):
+#     def __init__(self):
+#         super().__init__()
 
-    def name(self) -> Text:
-        return "action_check_house_type"
+#     def name(self) -> Text:
+#         return "action_check_house_type"
 
-    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        super().run(dispatcher, tracker, domain)
-        print(self.property_detail['Type'].iloc[0])
-        if self.property_detail['Type'].iloc[0].lower(): 
-            dispatcher.utter_message(text=f"House type for this property is {self.property_detail['Type'].iloc[0]}")
-        else: 
-            dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
-        return []
+#     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+#         super().run(dispatcher, tracker, domain)
+#         print(self.property_detail['Type'].iloc[0])
+#         if self.property_detail['Type'].iloc[0].lower(): 
+#             dispatcher.utter_message(text=f"House type for this property is {self.property_detail['Type'].iloc[0]}")
+#         else: 
+#             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
+#         return []
 
 
 

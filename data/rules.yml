@@ -11,32 +11,43 @@ rules:
   steps:
   - intent: take_email
   - action: utter_detail_varification
-  - action: utter_budget
+  - action: utter_ask_help
 
-- rule: after inform budget, utter_property list
+- rule: after ask help, show property
   steps:
-  - intent: informbudget
-  - action: utter_property_list
+  - intent: inform_answer_ask_help
+  - action: utter_show_properties
+  - action: utter_select_property
 
-
-- rule: after informing property, varify it.
+- rule: after selecting property, ask for questions
   steps:
-  - intent: informpropertylist
-  - action: utter_property_varification
-  - action: utter_agency_list
+  - intent: inform_select_property
+  - action: utter_ask_any_questions
 
-- rule: after informing agency, varify it
-  steps:
-  - intent: inform_agency_list
-  - action: utter_agency_varification
-  - action: action_find_properties_for_agencies
-  - action: utter_explore_property
+# - rule: after inform budget, utter_property list
+#   steps:
+#   - intent: informbudget
+#   - action: utter_property_list
 
-- rule: when user chooses property, show them property
-  steps:
-  - intent: inform_explore_property
-  - action: utter_explore_property_varification
-  - action: action_showing_property
+
+# - rule: after informing property, varify it.
+#   steps:
+#   - intent: informpropertylist
+#   - action: utter_property_varification
+#   - action: utter_agency_list
+
+# - rule: after informing agency, varify it
+#   steps:
+#   - intent: inform_agency_list
+#   - action: utter_agency_varification
+#   - action: action_find_properties_for_agencies
+#   - action: utter_explore_property
+
+# - rule: when user chooses property, show them property
+#   steps:
+#   - intent: inform_explore_property
+#   - action: utter_explore_property_varification
+#   - action: action_showing_property
 
 
 

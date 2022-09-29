@@ -10,29 +10,17 @@ stories:
   - action: utter_email
   - intent: take_email
   - action: utter_detail_varification
-  - action: utter_budget
-  - intent: informbudget
-  - action: utter_property_list
-  - intent: informpropertylist
-  - action: utter_property_varification
-  - action: utter_agency_list
-  - intent: inform_agency_list
-  - action: utter_agency_varification
-  - action: action_find_properties_for_agencies
-  - action: utter_explore_property
-  - intent: inform_explore_property
-  - action: utter_explore_property_varification
-  - action: action_showing_property
+  - action: utter_ask_help
+  - intent: inform_answer_ask_help
+  - action: utter_show_properties
+  - action: utter_select_property
+  - intent: inform_select_property
+  - action: utter_ask_any_questions
 
-- story: some property related info, villa, flat, badroom
+- story: some property_type related info, villa, flat, badroom
   steps:
-  - intent: property_villa
-  - action: action_check_villa_type
-
-- story: ask about flat
-  steps:
-  - intent: property_flat
-  - action: utter_flat
+  - intent: property_type
+  - action: action_check_house_type
 
 - story: ask about bedroom
   steps:

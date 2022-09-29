@@ -26,6 +26,7 @@ nlu:
     - [dipak](name)
     - [selvin mecwan](name)
     - [ali hussain](name)
+    - [harsh](name)
     - [rajesh khanna](name)
     - [amitabh](name)
     - [suresh](name)
@@ -114,17 +115,31 @@ nlu:
     - [D](agency_list)
 
 
-- intent: property_villa
+- intent: property_type
   examples: |
-    - is this property a villa?
-    - Does this property is a villa type?
-    - Is this a villa?
+    - is this property a [villa](house_type)?
+    - Does this property is a [villa](house_type) type?
+    - Is this a [villa](house_type)?
+    - Is this property a [flat](house_type)?
+    - Does this property a [House](house_type)?
+    - Is this a [Terraced](house_type)?
+    - Does this property a [apartment](house_type)?
+    - Is this a [apartment](house_type)?
+    - Does this property a [warehouse](house_type)?
+    - Is this a [end of terrace](house_type)?
+    - Is this a [Studio](house_type)?
+    - Is this a [Detached Bungalow](house_type)?
+    - Is this a [Bungalow](house_type)?
+    - Is this a [Plot](house_type)?
+    - Is this a [Barber Shop](house_type)?
+    - Is this a [Hairdresser](house_type)?
+    - Is this property a [detached](house_type) house?
+    - Is this property a [cottage](house_type)?
+    - Is this property a [maisonette](house_type)?
+    - Is this property a [Manhattan style studio](house_type)?
+    - What [type of property](house_type) is this ?
     
-- intent: property_flat
-  examples: |
-    - Is this property a flat?
-    - Does this property a flat?
-    - Is this a flat?
+
   
 - intent: inform_explore_property
   examples: |
@@ -202,7 +217,26 @@ nlu:
     - show me what type of house this?
     - house type
 
-  
+- intent: inform_answer_ask_help
+  examples: |
+    - I need to buy an apartment, please show me some properties.
+    - I need to buy an villa, please show me some properties.
+    - I need to buy an apartment, with an budget of £3000000 please show me some properties.
+    - I need to rent an apartment, with an budget of £7500 please show me some properties.
+    - I need to buy an villa, with an budget of £3000000 please show me some properties.
+    - I need to rent an villa, with an budget of £7500 please show me some properties.
+    - I need to buy an apartment, with an budget of £3000000  at Regency Street, London please show me some properties.
+    - I need to rent an apartment, with an budget of £7500 at Westow Street, London please show me some properties.
+    - I need to buy an villa, with an budget of £3000000  at Regency Street, London please show me some properties.
+    - I need to rent an villa, with an budget of £7500 at Westow Street, London please show me some properties.
+
+- intent: inform_select_property
+  examples: |
+    - [0](chosen_property)
+    - [1](chosen_property)
+    - [2](chosen_property)
+    - [3](chosen_property)
+
 
 
 
