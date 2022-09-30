@@ -30,6 +30,9 @@ intents:
 - ask_house_type_info
 - inform_answer_ask_help
 - inform_select_property
+- ask_about_features
+- ask_property_rent_or_sale
+- ask_about_lift
 
 entities:
 - choice_locality
@@ -42,6 +45,10 @@ entities:
 - choice
 - chosen_property
 - house_type
+- sale_rent
+- feature
+
+
 slots:
   choice_locality:
     type: categorical
@@ -253,4 +260,7 @@ actions:
 - action_show_pet_info
 - action_check_reception_info
 - action_check_bathroom_info
+- action_check_features
+- action_check_property_rent_or_sale
+- action_check_lift
 

@@ -73,12 +73,21 @@ stories:
   - intent: ask_house_type_info
   - action: action_check_house_type
 
+- story: ask_about_features_reply_them
+  steps: 
+  - intent: ask_about_features
+  - action: action_check_features
+
+- story: ask preperty is for rent or sale
+  steps: 
+  - intent: ask_property_rent_or_sale
+  - action: action_check_property_rent_or_sale
 
 
-
-
-
-
+- story: when ask about lift answer it
+  steps:
+  - intent: ask_about_lift
+  - action: action_check_lift
 
 - story: say_goodbye
   steps:

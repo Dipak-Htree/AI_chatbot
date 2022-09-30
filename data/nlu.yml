@@ -237,6 +237,96 @@ nlu:
     - [2](chosen_property)
     - [3](chosen_property)
 
+- intent: ask_property_rent_or_sale
+  examples: |
+    - Does this property is for [sale](sale_rent)?
+    - Is this property for [rent](sale_rent) ?
+    - property for sale or [rent](sale_rent) ?
 
 
+
+
+- intent: ask_about_features
+  examples: |
+    - Does this property comes with a [balcony](feature)?
+    - Does this porperty comes with a [garden](feature)?
+    - Does this property comes with a [rooftop terrace](feature)?
+    - Does the property come with [gym](feature)?
+    - Does the property come with [concierge](feature)?
+    - Does the property come with [swimming pool](feature)?
+    - Does the property come with [jacuzzi](feature)?
+    - Does the property come with [sauna room](feature)?
+    - Does the property come with [steam room](feature)?
+    - Does the property come with [communal area](feature)?
+    - Does the property come with [study area](feature)?
+    - Does the property come with [business lounge](feature)?
+    - what are the [facilities](feature) that come with a property?
+
+
+################################################
+- intent: ask_about_lift
+  examples: |
+    - Does this building have lift?
+    - Does this property comes with a lift?
+
+- intent: ask_about_smoking
+  examples: |
+    - Does smoking allowed in this property?
+    - Is there a smoking area?
+
+
+- intent: ask_about_website_link
+  examples: |
+    - What is the website link for this property?
+
+- intent: ask_map_link_for_property
+  examples: |
+    - can you give me map link for this property?
+    - what is the location of this property?
+
+- intent: ask_about_property_tenure
+  examples: |
+    - what is the property tenure?
+
+- intent: ask_about_letting_details
+  examples: |
+    - can you show me letting details?
+    - show me letting details
+
+- intent: ask_about_key_fetures
+  examples: |
+    - show me facilities in this building
+    - what facilities does this property have?
+
+- intent: ask_about_property_descriptions
+  examples: |
+    - show me property description
+
+- inetnt: ask_about_council_tax
+  examples:
+    - show me council tax for this property?
+    - what is the council tax for this building?
+
+- inetnt: ask_about_agent_name
+  examples: |
+    - show me agent name for this property?
+    - what is the agent name?
+
+- intent: ask_about_agent_address
+  examples: |
+    - show me agent address?
+    - what is the agent address?
+
+- intent: ask_about_agent_description
+  examples: |
+    - show me aagency desription
+    - can you give me more details about this agency?
+
+
+- intent: ask_about_agent_call_detail
+  examples: |
+    - give me agent call details
+    - show me agent phone number of agent
+
+    
 
