@@ -23,3 +23,8 @@ rules:
   steps:
   - intent: inform_select_property
   - action: utter_ask_any_questions
+
+# - rule: Implementation of the simple-fallback
+#   steps:
+#     - intent: nlu_fallback
+#     - action: Yohohohooho

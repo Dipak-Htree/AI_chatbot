@@ -1,24 +1,9 @@
-# The config recipe.
-# https://rasa.com/docs/rasa/model-configuration/
 recipe: default.v1
 
-# Configuration for Rasa NLU.
-# https://rasa.com/docs/rasa/nlu/components/
+
 language: en
 
 pipeline:
-# # No configuration for the NLU pipeline was provided. The following default pipeline was used to train your model.
-# # If you'd like to customize it, uncomment and adjust the pipeline.
-# # See https://rasa.com/docs/rasa/tuning-your-model for more information.
-  # - name: LanguageModelFeaturizer
-  #   model_weights: "/home/fx/Dev/chatbot/rubert-base-cased"
-  #   model_name: "bert"
-  #   cache_dir: null
-  # - name: SpacyNLP
-  #   model: en_core_web_md
-  #   # model: en_core_web_trf
-  # - name: SpacyTokenizer
-  # - name: SpacyFeaturizer
   - name: WhitespaceTokenizer
   - name: RegexFeaturizer
   - name: LexicalSyntacticFeaturizer
@@ -45,7 +30,6 @@ pipeline:
     model_confidence: softmax
   - name: FallbackClassifier
     threshold: 0.8
-    ambiguity_threshold: 0.1
 
 # Configuration for Rasa Core.
 # https://rasa.com/docs/rasa/core/policies/
@@ -54,8 +38,8 @@ policies:
 # # If you'd like to customize them, uncomment and adjust the policies.
 # # See https://rasa.com/docs/rasa/policies for more information.
   - name: RulePolicy
-    core_fallback_threshold: 0.2
-    enable_fallback_threshold: True
+    core_fallback_threshold: 0.5
+    enable_fallback_prediction: True
     core_fallback_action_name: "utter_DEFAULT_FALLBACK"
   - name: MemoizationPolicy
   - name: UnexpecTEDIntentPolicy

@@ -134,6 +134,7 @@ models/
 Jupyter_Notebook_Test/
 blenderbot-3B/
 events*
+.db
 # Pyre type checker
 .pyre/
 

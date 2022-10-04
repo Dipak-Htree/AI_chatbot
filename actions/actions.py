@@ -528,6 +528,25 @@ class CheckPropertyCost(Information):
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
 
-
-
  
+# class FallBack(Information):
+#     def __init__(self):
+#         super().__init__()
+
+#     def name(self) -> Text:
+#         return "my_fallback_action"
+
+#     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+#         print('my_fallback_action')
+#         return []
+
+# class ActionDeafultFallback(Action):
+
+#     def name(self) -> Text:
+#         return "Yohohohooho"
+
+#     def run(self, dispatcher, tracker, domain):
+#         message = "This is the end!!!!!Yohohoho"
+#         dispatcher.utter_message(text=message)
+
+#         return []
