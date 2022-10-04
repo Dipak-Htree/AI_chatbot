@@ -21,7 +21,7 @@ intents:
 - property_floorplan
 - property_bedroom
 - ask_parking
-- ask_address
+- ask_property_address
 - ask_garden
 - ask_website_link
 - ask_pet_info
@@ -33,6 +33,18 @@ intents:
 - ask_about_features
 - ask_property_rent_or_sale
 - ask_about_lift
+- ask_about_smoking
+- ask_map_link_for_property
+- ask_about_property_tenure
+- ask_about_letting_details
+- ask_about_key_fetures
+- ask_about_property_descriptions
+- ask_about_council_tax
+- ask_about_agent_name
+- ask_about_agent_address
+- ask_about_agent_description
+- ask_property_cost
+- ask_about_how_long_property_been_on_market
 
 entities:
 - choice_locality
@@ -253,7 +265,7 @@ actions:
 - action_check_house_type
 - action_check_property_floorplan
 - action_check_bedroom
-- action_show_address
+- action_show_property_address
 - action_show_parking
 - action_show_garden
 - action_show_website_link
@@ -263,4 +275,17 @@ actions:
 - action_check_features
 - action_check_property_rent_or_sale
 - action_check_lift
+- action_check_smoking
+- action_check_map_link_for_property
+- action_check_property_tenure
+- action_check_letting_details
+- action_check_key_features
+- action_check_property_descriptions
+- action_check_council_tax
+- action_check_agent_name
+- action_check_agent_address
+- action_check_agent_decriptions
+- action_check_property_cost
+- check_about_how_long_property_been_on_market
+
 

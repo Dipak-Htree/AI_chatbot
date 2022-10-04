@@ -27,10 +27,10 @@ stories:
   - intent: property_bedroom
   - action: action_check_bedroom
 
-- story: ask about address
+- story: ask about property address
   steps:
-  - intent: ask_address
-  - action: action_show_address
+  - intent: ask_property_address
+  - action: action_show_property_address
 
 - story: ask about parking
   steps:
@@ -58,20 +58,20 @@ stories:
   - intent: property_floorplan
   - action: action_check_property_floorplan
 
-- story: ask about reception
-  steps:
-  - intent: ask_reception_info
-  - action: action_check_reception_info
+# - story: ask about reception
+#   steps:
+#   - intent: ask_reception_info
+#   - action: action_check_reception_info
 
 - story: ask about bathroom
   steps:
   - intent: ask_bathroom_info
   - action: action_check_bathroom_info
 
-- story: ask_about_house_type
-  steps:
-  - intent: ask_house_type_info
-  - action: action_check_house_type
+# - story: ask_about_house_type
+#   steps:
+#   - intent: ask_house_type_info
+#   - action: action_check_house_type
 
 - story: ask_about_features_reply_them
   steps: 
@@ -88,6 +88,71 @@ stories:
   steps:
   - intent: ask_about_lift
   - action: action_check_lift
+
+- story: when ask about smoking
+  steps:
+  - intent: ask_about_smoking
+  - action: action_check_smoking
+
+- story: when ask about map link for property
+  steps:
+  - intent: ask_map_link_for_property
+  - action: action_check_map_link_for_property
+  
+
+- story: when ask about property tenure
+  steps:
+  - intent: ask_about_property_tenure
+  - action: action_check_property_tenure
+
+- story: when ask about letting details
+  steps:
+  - intent: ask_about_letting_details
+  - action: action_check_letting_details
+
+- story: when ask about key_feature
+  steps:
+  - intent: ask_about_key_fetures
+  - action: action_check_key_features
+
+- story: when ask about property descriptions
+  steps:
+  - intent: ask_about_property_descriptions
+  - action: action_check_property_descriptions
+
+- story: when ask about council_tax
+  steps:
+  - intent: ask_about_council_tax
+  - action: action_check_council_tax
+
+- story: when ask about agent name
+  steps:
+  - intent: ask_about_agent_name
+  - action: action_check_agent_name
+
+- story: when ask about agent address
+  steps:
+  - intent: ask_about_agent_address
+  - action: action_check_agent_address
+
+
+- story: when ask about agent decsriptions
+  steps:
+  - intent: ask_about_agent_description
+  - action: action_check_agent_decriptions
+
+- story: how long the property has been on sales or letting market for
+  steps:
+  - intent: ask_about_how_long_property_been_on_market
+  - action: check_about_how_long_property_been_on_market
+
+
+
+
+- story: cost of this proprty
+  steps:
+  - intent: ask_property_cost
+  - action: action_check_property_cost
 
 - story: say_goodbye
   steps:

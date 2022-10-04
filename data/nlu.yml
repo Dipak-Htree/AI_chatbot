@@ -38,6 +38,9 @@ nlu:
   examples: |
     - [abc@gmail.com](email)
     - [unknown.known@yahoo.com](email)
+    - [dipak@gmail.com](email)
+    - [laith@yahoo.com](email)
+    - [john.5326@abc.hotmail.com](email)
     - This my email address. [abc@mail.com](email)
     - My email is [pqr@gmail.com]
 
@@ -161,7 +164,7 @@ nlu:
     - Total how many bedroom does this property have?
     - how many bedroom
 
-- intent: ask_address
+- intent: ask_property_address
   examples: |
     - CAn you show me address for this porperty?
     - show me address?
@@ -190,18 +193,18 @@ nlu:
 - intent: ask_pet_info
   examples: |
     - is is possible to stay with pet ?
-    - pet allowed here?
+    - pets allowed here?
     - does dogs allowed here?
     - pets
     - Is the property pet friendly?
     - Is being the property not pet friendly a deal breaker?
 
-- intent: ask_reception_info
-  examples: |
-    - Does this property includes any type of receptions?
-    - Are reception is there?
-    - Do you have reception for this property?
-    - reception
+# - intent: ask_reception_info
+#   examples: |
+#     - Does this property includes any type of receptions?
+#     - Are reception is there?
+#     - Do you have reception for this property?
+  
 
 - intent: ask_bathroom_info
   examples: |
@@ -219,6 +222,7 @@ nlu:
 
 - intent: inform_answer_ask_help
   examples: |
+    - show me properties
     - I need to buy an apartment, please show me some properties.
     - I need to buy an villa, please show me some properties.
     - I need to buy an apartment, with an budget of £3000000 please show me some properties.
@@ -268,65 +272,120 @@ nlu:
   examples: |
     - Does this building have lift?
     - Does this property comes with a lift?
+    - Does the flat contains lift?
+    - Are the lifts included in the property?
+    
 
 - intent: ask_about_smoking
   examples: |
     - Does smoking allowed in this property?
     - Is there a smoking area?
-
+    - Does the smoking area is been included in the property?
+    - What is the size of smoking area?
+    
 
 - intent: ask_about_website_link
   examples: |
     - What is the website link for this property?
+    - Can you provide the website for the property?
+    - Can you provide the website for the flats?
+    - Can you provide the website for the apartment?
+    - Any website to visit the property online?
 
 - intent: ask_map_link_for_property
   examples: |
     - can you give me map link for this property?
     - what is the location of this property?
+    - Can you please share the location for this flats?
+    - Can you please share the location for this apartment?
 
 - intent: ask_about_property_tenure
   examples: |
     - what is the property tenure?
+    - what is the minimum property tenure?
+    - what is the maximum property tenure?
+    - what is the tenure for this apartment?
+    - what is the tenure for the flats?
+    - what is the tenure for the shop?
 
 - intent: ask_about_letting_details
   examples: |
     - can you show me letting details?
     - show me letting details
+    - can you please share the letting details for the property?
+    - can you please share the letting details for the flat?
+    - can you please share the letting details for the apartment?
 
 - intent: ask_about_key_fetures
   examples: |
     - show me facilities in this building
+    - What are the shops and amenities nearby?
     - what facilities does this property have?
+    - can you please tell me the key features of the property?
+    - what are the attractions of the property?
+    - please provide the attracting features of the flats?
+    - please provide the attracting features of the apartments?
+    
 
 - intent: ask_about_property_descriptions
   examples: |
     - show me property description
+    - can you please provide the details of the property
+    - Give the property information for my reference
+    - drill down of the property
+    
 
-- inetnt: ask_about_council_tax
-  examples:
+- intent: ask_about_council_tax
+  examples: |
     - show me council tax for this property?
     - what is the council tax for this building?
+    - what is the council tax for this apartment?
+    - what is the council tax for this flats?
 
-- inetnt: ask_about_agent_name
+- intent: ask_about_agent_name
   examples: |
     - show me agent name for this property?
     - what is the agent name?
+    - can you please provide the agent name?
+    - share the agent name
 
 - intent: ask_about_agent_address
   examples: |
     - show me agent address?
     - what is the agent address?
+    - can you please provide the agent address?
+    - share the agent address
 
 - intent: ask_about_agent_description
   examples: |
     - show me aagency desription
     - can you give me more details about this agency?
+    - can you please provide the agent description?
+    - share more information for the agent.
+    
 
 
 - intent: ask_about_agent_call_detail
   examples: |
     - give me agent call details
     - show me agent phone number of agent
+    - can you please provide the contact details for the agent
+    - share the contact details for the agent
+    - share the phone number of the agent
 
+- intent: ask_about_how_long_property_been_on_market
+  examples: |
+    - How long has this property been on the sales market for?
+    - How long has this property been on the letting market for?
+
+
+
+- intent: ask_property_cost
+  examples: |
+    - what is the cost of this property?
+    - what is the price of this property?
+    - cost of this property
+    
     
 
+    
