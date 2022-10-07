@@ -18,21 +18,30 @@ action_endpoint:
 # By default the conversations are stored in memory.
 # https://rasa.com/docs/rasa/tracker-stores
 
+tracker_store:
+   type: SQL
+   dialect: 'mysql+pymysql'
+   url: 'localhost'
+   db: 'rasa'
+   username: 'root'
+   password: 'root'
+
+
+
+
 # tracker_store:
 #    type: SQL
-#    dialect: "postgresql"
-#    url: "localhost"
-#    port: "5432"
+#    dialect: 'postgresql'
+#    url: 'localhost'
 #    db: 'rasa'
-#    password: "root"
-#    use_ssl: <whether or not the communication is encrypted, default false>
+#    username: 'root'
+#    password: 'root'
+  #  use_ssl: <whether or not the communication is encrypted, default false>
 
 # tracker_store:
 #    type: mongod
-#    url: <url to your mongo instance, e.g. mongodb://localhost:27017>
-#    db: <name of the db within your mongo instance, e.g. rasa>
-#    username: <username used for authentication>
-#    password: <password used for authentication>
+#    url: "mongodb://localhost:27017"
+#    db: 'rasa'
 
 # Event broker which all conversation events should be streamed to.
 # https://rasa.com/docs/rasa/event-brokers

@@ -141,6 +141,8 @@ nlu:
     - Is this property a [maisonette](house_type)?
     - Is this property a [Manhattan style studio](house_type)?
     - What [type of property](house_type) is this ?
+    - what is the [house type](house_type) of this property
+    - which type of [house](house_type) is this?
     
 
   
@@ -168,13 +170,17 @@ nlu:
   examples: |
     - CAn you show me address for this porperty?
     - show me address?
+    - what is the property address
     - address
     - What is the address for this property
 
 - intent: ask_parking
   examples: |
     - Is this property has parking?
-    - DOes it includes parking?
+    - does this property has parking?
+    - what type of parking, this property has?
+    - Does it includes parking?
+    - does this property comes with parking         
     - parking
 
 - intent: ask_garden
@@ -189,6 +195,12 @@ nlu:
     - Can you provide me link of this website?
     - Give me link of the site.
     - show me website link for this
+    - What is the website link for this property?
+    - Can you provide the website for the property?
+    - Can you provide the website for the flats?
+    - Can you provide the website for the apartment?
+    - Any website to visit the property online?
+    - show me link
 
 - intent: ask_pet_info
   examples: |
@@ -199,11 +211,11 @@ nlu:
     - Is the property pet friendly?
     - Is being the property not pet friendly a deal breaker?
 
-# - intent: ask_reception_info
-#   examples: |
-#     - Does this property includes any type of receptions?
-#     - Are reception is there?
-#     - Do you have reception for this property?
+- intent: ask_reception_info
+  examples: |
+    - Does this property includes any type of receptions?
+    - Are reception is there?
+    - Do you have reception for this property?
   
 
 - intent: ask_bathroom_info
@@ -266,8 +278,6 @@ nlu:
     - Does the property come with [business lounge](feature)?
     - what are the [facilities](feature) that come with a property?
 
-
-################################################
 - intent: ask_about_lift
   examples: |
     - Does this building have lift?
@@ -284,13 +294,7 @@ nlu:
     - What is the size of smoking area?
     
 
-- intent: ask_about_website_link
-  examples: |
-    - What is the website link for this property?
-    - Can you provide the website for the property?
-    - Can you provide the website for the flats?
-    - Can you provide the website for the apartment?
-    - Any website to visit the property online?
+
 
 - intent: ask_map_link_for_property
   examples: |
@@ -298,6 +302,8 @@ nlu:
     - what is the location of this property?
     - Can you please share the location for this flats?
     - Can you please share the location for this apartment?
+    - show me map
+    - show me map link
 
 - intent: ask_about_property_tenure
   examples: |
@@ -348,6 +354,9 @@ nlu:
     - what is the agent name?
     - can you please provide the agent name?
     - share the agent name
+    - agency name
+    - show me agency name
+  
 
 - intent: ask_about_agent_address
   examples: |
@@ -355,6 +364,8 @@ nlu:
     - what is the agent address?
     - can you please provide the agent address?
     - share the agent address
+    - agency address
+    - give me agency address
 
 - intent: ask_about_agent_description
   examples: |
@@ -362,6 +373,8 @@ nlu:
     - can you give me more details about this agency?
     - can you please provide the agent description?
     - share more information for the agent.
+    - give me agency desription
+    - agency desription
     
 
 
@@ -372,6 +385,11 @@ nlu:
     - can you please provide the contact details for the agent
     - share the contact details for the agent
     - share the phone number of the agent
+    - agency call details?
+    - agency call
+    - show me agency phone number?
+    - give  me agency phone details?
+    - can you give me agency call details
 
 - intent: ask_about_how_long_property_been_on_market
   examples: |
@@ -385,7 +403,91 @@ nlu:
     - what is the cost of this property?
     - what is the price of this property?
     - cost of this property
-    
-    
+    - what is the cost for this property?
+    - cost for this property?
 
+- intent: ask_about_bedroom
+  examples: |
+    - Does the bedroom comes with single bed?
+    - Does the bedroom comes with double bed?
+    - Does the bedroom comes with a mattress?
+    - Does the bedroom comes with a wardrobe?
+    - Does the bedroom have underfloor heating?
+    - Does the bedroom have bedside tables?
+    - Does the bedroom have curtains?
+    - What is the bedroom’s floor made from?
+    - Does the bedroom door have locks?
+    - How many wardrobes does each bedroom have?
+
+- intent: ask_about_bathroom
+  examples: |
+    - what is the bathroom size
+    - Does the bathroom contain the bath and the toilet or are they separate?
+    - Does the bathroom have bath or shower?
+    - What is the bathroom square meter?
+    - What is the bathroom’s square feet?
+    - How much storage does the bathroom have?
+    - Does the bathroom have towel dryer?
+    - What is the bathroom’s floor made from?
+    - How high is the bathroom celling?
+    - does this property has family bathroom?
+
+- intent: ask_about_kitchen
+  examples: |
+    - What is the kitchen square feet?
+    - Does the kitchen come fitted?
+    - What is the kitchen square meters?
+    - Where is the kitchen located in the apartment?
+    - Which way the kitchen is facing?
+    - What does the kitchen contain?
+    - How much storage does the kitchen have?
+    - How many cabinets the kitchen has?
+    - Does the kitchen contain an oven?
+    - Does the kitchen contain hob?
+    - How many hobs does the kitchen have?
+    - Does the kitchen include dish washer?
+    - Does the kitchen include a washing machine?
+    - Does the kitchen have a dining table?
+    - Does the kitchen include a washing machine?
+    - Does the kitchen have a dining table?
+    - Does the kitchen have dining table chairs?
+    - Does the kitchen come with cutlery?
+    - Does the kitchen overlook the garden?
+    - Does the kitchen lead on to the balcony?
+    - What is the kitchen floor made from?
+    - Does the kitchen have an exhaust?
+    - Does the kitchen have a fire alarm?
     
+- intent: ask_about_living_room
+  examples: |
+    - Does this property have a living room?
+    - Does the living room have TV?
+    - Does the living room have sofa?
+    - How many sofas does the living room have?
+    - Does the sofa in the living room turn into bed?
+    - Does the living room have a coffee table?
+    - How many coffee tables are there in the living room?
+    - Does the living room have carpet?
+    - Does the living room have curtains?
+    - Does the living room have a TV stand?
+    - Does the living room have dresser?
+    - Is the living room carpeted or is it hardwood?
+    - What is the living room floor made from?
+    - Is the living room and kitchen open plan?
+    - Does the living room have coffee table chairs?
+    - Does the living room have chandeliers?
+    - Does the living room overlook the balcony?
+
+- intent: ask_about_entrance_hall_info
+  examples: |
+    - does this property includes entrance hall?
+    - does entrance hall included in this?
+    - do entrance room is there?
+    - entrance space is there?
+
+- intent: ask_about_dining_room_info
+  examples: |
+    - does this property has any type of dining room?
+    - show me dining room info?
+    - does this property has dining room?
+  

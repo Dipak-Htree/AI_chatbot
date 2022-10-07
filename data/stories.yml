@@ -58,10 +58,10 @@ stories:
   - intent: property_floorplan
   - action: action_check_property_floorplan
 
-# - story: ask about reception
-#   steps:
-#   - intent: ask_reception_info
-#   - action: action_check_reception_info
+- story: ask about reception
+  steps:
+  - intent: ask_reception_info
+  - action: action_check_reception_info
 
 - story: ask about bathroom
   steps:
@@ -153,6 +153,39 @@ stories:
   steps:
   - intent: ask_property_cost
   - action: action_check_property_cost
+
+- story: ask_about_beds
+  steps:
+  - intent: ask_about_bedroom
+  - action: action_check_bedroom_info
+
+- story: ask_about_bathroom
+  steps:
+  - intent: ask_about_bathroom
+  - action: action_check_bathroom
+
+- story: ask about kitchen
+  steps:
+    - intent: ask_about_kitchen
+    - action: action_check_kitchen
+
+- story: ask about living room
+  steps:
+    - intent: ask_about_living_room
+    - action: action_check_living_room
+
+
+- story: ask_about_entrance_hall_info
+  steps:
+    - intent: ask_about_entrance_hall_info
+    - action: action_check_entrance_hall_info
+
+- story: ask_about_dining_room_info
+  steps:
+    - intent: ask_about_dining_room_info
+    - action: action_check_about_dining_room
+
+
 
 - story: say_goodbye
   steps:

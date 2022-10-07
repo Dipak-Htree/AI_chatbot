@@ -1,8 +1,10 @@
 from cmath import cos, nan
 from email import contentmanager
 from lib2to3.pgen2 import driver
-from typing import Dict, Text, Any, List, Optional
+from multiprocessing import context
+from typing import Dict, Text, Any, List, Optional, final
 import csv
+from xml.sax.handler import feature_external_ges
 from rasa_sdk import Tracker, Action
 from rasa_sdk.executor import CollectingDispatcher
 from rasa.core.nlg import NaturalLanguageGenerator as nlg
@@ -14,6 +16,7 @@ import re
 import nltk
 from nltk import tokenize
 from operator import itemgetter
+import spacy
 import math
 from bs4 import BeautifulSoup
 import requests
@@ -23,9 +26,23 @@ from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
 from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+import torch
+from transformers import BertForQuestionAnswering
+from transformers import BertTokenizer
+
+#Model
+model = BertForQuestionAnswering.from_pretrained('bert-large-uncased-whole-word-masking-finetuned-squad')
+
+#Tokenizer
+tokenizer = BertTokenizer.from_pretrained('bert-large-uncased-whole-word-masking-finetuned-squad')
+
+
 data = pd.read_csv('Excel_File/mainData.csv')
 
 class Information(Action):
+    def __init__(self, property_detail = '') -> None:
+        self.property_detail = property_detail
+        
     def name(self) -> Text:
         return "action_information"
 
@@ -45,7 +62,12 @@ class Information(Action):
         return self.scrape_data
 
     def search_query(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any], q, context) -> List[Dict[Text, Any]]:
-        model_name = "deepset/roberta-base-squad2"
+        # model_name = "deepset/roberta-base-squad2"
+        model_name = 'bert-large-uncased-whole-word-masking-finetuned-squad'
+        # model_name = 'deepset/roberta-large-squad2'
+        # model_name = 'bert-large-cased-whole-word-masking-finetuned-squad'
+        # model_name = 'm3hrdadfi/gpt2-QA'
+        # model_name = 'csarron/bert-base-uncased-squad-v1'
         nlp = pipeline('question-answering', model=model_name, tokenizer=model_name)
         QA_input = {
             'question': f'{q}',
@@ -54,7 +76,7 @@ class Information(Action):
         res = nlp(QA_input)
         return [res]
 
-    def extract_keywords(doc):
+    def extract_keywords(self, doc):
         def check_sent(word, sentences): 
             final = [all([w in x for w in word]) for x in sentences] 
             sent_len = [sentences[i] for i in range(0, len(final)) if final[i]]
@@ -94,7 +116,7 @@ class Information(Action):
         keywords = keywords_dict.keys()
         return list(keywords)
     
-       
+
 
 
 class CheckVillaType(Information):
@@ -107,17 +129,25 @@ class CheckVillaType(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_house_type')
         super().run(dispatcher, tracker, domain)
-        house_type = self.property_detail['houseType'].lower()
+        
+        house_type = self.property_detail['houseType']
+        print("house type", type(house_type))
         q_house_type = tracker.get_slot('house_type')
-        model = SentenceTransformer('all-MiniLM-L6-v2')
-        embeddings1 = model.encode(house_type, convert_to_tensor=True)
-        embeddings2 = model.encode(q_house_type, convert_to_tensor=True)
-        cosine_scores = util.cos_sim(embeddings1, embeddings2)
-        print(cosine_scores)
-        if cosine_scores[0][0].item() > 0.50:
-            dispatcher.utter_message(text=f"Yes, This property is {house_type}")
-        elif cosine_scores[0][0].item() < 0.50:
-            dispatcher.utter_message(text=f"No, This property is {house_type}")
+        try:
+            if math.isnan(house_type) :
+                dispatcher.utter_message(text=f"Sorry, we don't have this information.")
+            
+        except:
+            model = SentenceTransformer('all-MiniLM-L6-v2')
+            embeddings1 = model.encode(house_type, convert_to_tensor=True)
+            embeddings2 = model.encode(q_house_type, convert_to_tensor=True)
+            cosine_scores = util.cos_sim(embeddings1, embeddings2)
+            print(cosine_scores)
+            if cosine_scores[0][0].item() > 0.50:
+                dispatcher.utter_message(text=f"This property is {house_type}")
+            elif cosine_scores[0][0].item() < 0.50:
+                dispatcher.utter_message(text=f"No, This property is {house_type}")
+           
         return []
 
 
@@ -189,7 +219,31 @@ class CheckParking(Information):
         elif self.property_detail['parkingSpace'] == 'no':
             dispatcher.utter_message(text=f"No, it does not includes parking.")
         else:
-            dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
+            super().scrapeData()
+            q = "Does this property has parking space?"
+            res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+            q = tracker.latest_message["text"]
+            # final_res = super().search_query(dispatcher, tracker, domain, q, res[0]['answer'])
+            # print(res[0], "\n", final_res[0])
+            # if "parking" in final_res[0]['answer'].lower():
+            #     keywords = super().extract_keywords(final_res[0]['answer'])
+            #     print("Keywords", keywords)
+            #     dispatcher.utter_message(text=f"{final_res[0]['answer']}")
+            # else:
+            #     dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
+            print(res[0])
+            encoding = tokenizer.encode_plus(text=q,text_pair=res[0]['answer'], padding=True, truncation=True, add_special_tokens=True)
+            inputs = encoding['input_ids']  #Token embeddings
+            sentence_embedding = encoding['token_type_ids']  #Segment embeddings
+            tokens = tokenizer.convert_ids_to_tokens(inputs) 
+            output = model(torch.tensor([inputs]),  token_type_ids=torch.tensor([sentence_embedding]))
+            answer_start = torch.argmax(output.start_logits)
+            answer_end = torch.argmax(output.end_logits)
+            if answer_end >= answer_start:
+                answer = " ".join(tokens[answer_start:answer_end+1])
+                dispatcher.utter_message(text=f"{answer}")
+            else:
+                dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
 
 class CheckGarden(Information):
@@ -270,12 +324,12 @@ class CheckBathroomInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_bathroom_info')
         super().run(dispatcher, tracker, domain)
-        if "bathroom" in self.property_detail['bathroom']: 
-            dispatcher.utter_message(text=f"Yes, This property includes bathroom \n{self.property_detail['bathroom']}")
-        elif "no" in self.property_detail['bathroom']:
-            dispatcher.utter_message(text=f"no, this property does not includes bathroom.")
-        else:
-            dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
+        bathroom = self.property_detail['bathroom']
+        try:
+            if math.isnan(bathroom) :
+                dispatcher.utter_message(text=f"Sorry, we don't have this information.")
+        except:
+            dispatcher.utter_message(text=f"Yes, This property includes {bathroom} bathroom")
         return []
 
 
@@ -288,7 +342,15 @@ class CheckFeaturesInfo(Information):
         return "action_check_features"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        super().run(dispatcher, tracker, domain)
         print('action_check_features')
+        feature = tracker.latest_message['entities'][0]['value']
+        if feature == 'facilities':
+            dispatcher.utter_message(text=f"{self.property_detail['keyFeatures']}")
+        elif (feature in self.property_detail['keyFeatures']) or (feature in self.property_detail['propertyDescriptions']):
+            dispatcher.utter_message(text=f"Yes, This property includes {feature}")
+        else:
+            dispatcher.utter_message(text=f"No, This property does not includes {feature}")
         return []
 
 class CheckRentOrSaleInfo(Information):
@@ -365,7 +427,10 @@ class CheckTenureInfo(Information):
         print('action_check_property_tenure')
         super().run(dispatcher, tracker, domain)
         if self.property_detail['tenure'] is not None: 
-            dispatcher.utter_message(text=f"Here is the property tenure.\n{self.property_detail['tenure']}")
+            if 'ask agent' not in self.property_detail['tenure']:
+                dispatcher.utter_message(text=f"Here is the property tenure.\n{self.property_detail['tenure']}")
+            else:
+                dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -528,25 +593,232 @@ class CheckPropertyCost(Information):
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
 
+class CheckBedroomDescription(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_bedroom_info"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_bedroom_info')
+        super().run(dispatcher, tracker, domain)
+        super().scrapeData()
+        
+        
+
+
+
+        q = "show me bedroom information?"
+        res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        q = tracker.latest_message["text"]
+        final_res = super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        print(res[0], "\n", final_res[0])
+        if final_res[0]['score'] >= 0.01:
+            dispatcher.utter_message(text=f"{final_res[0]['answer']}")
+        else:
+            dispatcher.utter_message(text=f"Sorry, we don't have that info.")
+        return []
+
+
+class BathroomDescription(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_bathroom"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_bathroom')
+        super().run(dispatcher, tracker, domain)
+        super().scrapeData()
+        
+        q = "show me bathroom information?"
+        res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        q = tracker.latest_message["text"]
+        final_res = super().search_query(dispatcher, tracker, domain, q, res[0]['answer'])
+        print(res[0], "\n", final_res[0])
+
+
+        lines = []
+        nlp = spacy.load("en_core_web_md")
+        doc = nlp(self.scrape_data)
+        for sent in doc.sents:
+            lines.append(sent.text)
+        final_data = []
+        for line in lines:
+            if 'bedroom' in line.lower():
+                final_data.append(line)
+        final_data = " ".join(final_data)
+
+        encoding = tokenizer.encode_plus(text=q,text_pair=final_data, padding=True, truncation=True, add_special_tokens=True)
+        inputs = encoding['input_ids']  #Token embeddings
+        sentence_embedding = encoding['token_type_ids']  #Segment embeddings
+        tokens = tokenizer.convert_ids_to_tokens(inputs) 
+
+        output = model(torch.tensor([inputs]),  token_type_ids=torch.tensor([sentence_embedding]))
+        answer_start = torch.argmax(output.start_logits)
+        answer_end = torch.argmax(output.end_logits)
+        if answer_end >= answer_start:
+            answer = " ".join(tokens[answer_start:answer_end+1])
+            print("Answer: ", answer)
+        else:
+            print("Answer: I am unable to find the answer to this question. Can you please ask another question?")
+
+
+        if final_res[0]['score'] >= 0.01:
+            dispatcher.utter_message(text=f"{final_res[0]['answer']}")
+        else:
+            dispatcher.utter_message(text=f"Sorry, we don't have that info.")
+        return []
+
+
+
+class CheckKitchen(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_kitchen"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_kitchen')
+        super().run(dispatcher, tracker, domain)
+        super().scrapeData()
+        q = "show me kitchen information?"
+        res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        q = tracker.latest_message["text"]
+        # print(res[0])
+        final_res = super().search_query(dispatcher, tracker, domain, q, res[0]['answer'])
+        print(res[0], "\n", final_res[0])
+        if final_res[0]['score'] >= 0.05:
+            # keywords = super().extract_keywords(final_res[0]['answer'])
+            # print("Keywords", keywords)
+            dispatcher.utter_message(text=f"{final_res[0]['answer']}")
+        else:
+            dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
+        
+        # encoding = tokenizer.encode_plus(text=q,text_pair=res[0]['answer'], padding=True, truncation=True, add_special_tokens=True)
+        # inputs = encoding['input_ids']  #Token embeddings
+        # sentence_embedding = encoding['token_type_ids']  #Segment embeddings
+        # tokens = tokenizer.convert_ids_to_tokens(inputs) 
+        # output = model(torch.tensor([inputs]),  token_type_ids=torch.tensor([sentence_embedding]))
+        # print(output)
+        # answer_start = torch.argmax(output.start_logits)
+        # answer_end = torch.argmax(output.end_logits)
+        # if answer_end >= answer_start:
+        #     answer = " ".join(tokens[answer_start:answer_end+1])
+        #     dispatcher.utter_message(text=f"{answer}")
+        # else:
+        #     dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
+        return []
+
+
+
+class CheckLivingRoomDescription(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_living_room"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_living_room')
+        super().run(dispatcher, tracker, domain)
+        super().scrapeData()
+        
+        q = "show me living room information?"
+        res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        q = tracker.latest_message["text"]
+        final_res = super().search_query(dispatcher, tracker, domain, q, res[0]['answer'])
+        print(res[0], "\n", final_res[0])
+        if final_res[0]['score'] >= 0.01:
+            dispatcher.utter_message(text=f"{final_res[0]['answer']}")
+        else:
+            dispatcher.utter_message(text=f"Sorry, we don't have that info.")
+        return []
+
+
+
+class CheckEntranceHall(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_entrance_hall_info"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_entrance_hall_info')
+        super().run(dispatcher, tracker, domain)
+        super().scrapeData()
+        
+        q = "show me entrance hall information?"
+        res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        q = tracker.latest_message["text"]
+        final_res = super().search_query(dispatcher, tracker, domain, q, res[0]['answer'])
+        print(res[0], "\n", final_res[0])
+        if final_res[0]['score'] >= 0.01:
+            dispatcher.utter_message(text=f"{final_res[0]['answer']}")
+        else:
+            dispatcher.utter_message(text=f"Sorry, we don't have that info.")
+        return []
+
+
+
+
+class CheckDiningRoom(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_about_dining_room"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_about_dining_room')
+        super().run(dispatcher, tracker, domain)
+        super().scrapeData()
+        
+        q = "Show me dining room information?"
+        res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        q = tracker.latest_message["text"]
+        final_res = super().search_query(dispatcher, tracker, domain, q, res[0]['answer'])
+        print(res[0], "\n", final_res[0])
+        if final_res[0]['score'] >= 0.01:
+            dispatcher.utter_message(text=f"{final_res[0]['answer']}")
+        else:
+            dispatcher.utter_message(text=f"Sorry, we don't have that info.")
+        return []
+
+
+
+
+
+
+
+
+
+
  
-# class FallBack(Information):
-#     def __init__(self):
-#         super().__init__()
+class FallBack(Information):
+    def __init__(self):
+        super().__init__()
 
-#     def name(self) -> Text:
-#         return "my_fallback_action"
+    def name(self) -> Text:
+        return "my_fallback_action"
 
-#     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-#         print('my_fallback_action')
-#         return []
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('my_fallback_action')
+        super().run(dispatcher, tracker, domain)
+        super().scrapeData()
 
-# class ActionDeafultFallback(Action):
+        q = tracker.latest_message["text"]
+        res = super().search_query(dispatcher, tracker, domain,q, self.scrape_data)
+        
+        print(res[0])
+        if res[0]['score'] > 0.10:
+            dispatcher.utter_message(text=res[0]['answer'])
+        else:
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
+        
+        return []
 
-#     def name(self) -> Text:
-#         return "Yohohohooho"
-
-#     def run(self, dispatcher, tracker, domain):
-#         message = "This is the end!!!!!Yohohoho"
-#         dispatcher.utter_message(text=message)
-
-#         return []

@@ -45,6 +45,12 @@ intents:
 - ask_about_agent_description
 - ask_property_cost
 - ask_about_how_long_property_been_on_market
+- ask_about_bedroom
+- ask_about_bathroom
+- ask_about_kitchen
+- ask_about_living_room
+- ask_about_entrance_hall_info
+- ask_about_dining_room_info
 
 entities:
 - choice_locality
@@ -143,6 +149,8 @@ slots:
     - type: from_entity
       entity: chosen_property
     values:
+    - 11
+    - 26
     - p1
     - p1
     - p2
@@ -287,5 +295,12 @@ actions:
 - action_check_agent_decriptions
 - action_check_property_cost
 - check_about_how_long_property_been_on_market
+- action_check_bedroom_info
+- action_check_bathroom
+- action_check_kitchen
+- action_check_living_room
+- action_check_entrance_hall_info
+- action_check_about_dining_room
+- my_fallback_action
 
 
