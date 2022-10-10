@@ -38,7 +38,7 @@ policies:
 # # If you'd like to customize them, uncomment and adjust the policies.
 # # See https://rasa.com/docs/rasa/policies for more information.
   - name: RulePolicy
-    core_fallback_threshold: 0.5
+    core_fallback_threshold: 0.3
     enable_fallback_prediction: True
     core_fallback_action_name: "my_fallback_action"
   - name: MemoizationPolicy

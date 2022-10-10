@@ -19,12 +19,12 @@ stories:
 
 - story: some property_type related info, villa, flat, badroom
   steps:
-  - intent: property_type
+  - intent: ask_about_property_type
   - action: action_check_house_type
 
 - story: ask about bedroom
   steps:
-  - intent: property_bedroom
+  - intent: ask_property_bedroom
   - action: action_check_bedroom
 
 - story: ask about property address
@@ -55,7 +55,7 @@ stories:
 
 - story: property floorplan layout
   steps:
-  - intent: property_floorplan
+  - intent: ask_property_floorplan
   - action: action_check_property_floorplan
 
 - story: ask about reception
@@ -186,8 +186,33 @@ stories:
     - action: action_check_about_dining_room
 
 
+- story: ask_about_size
+  steps:
+    - intent: ask_about_room_size
+    - action: action_check_about_room_size
+
+
+- story: inform directly to agency
+  steps:
+    - intent: inform_agency_directly_agency
+    - action: action_inform_directly_agency
+
+
+
+
+- story: style of building
+  steps:
+  - intent: ask_about_style_of_building
+  - action: action_check_about_style_of_building
+
+  
+- story: ask about glass window
+  steps: 
+    - intent: ask_about_glass_window
+    - action: action_check_about_glass_window
 
 - story: say_goodbye
   steps:
   - intent: goodbye
   - action: utter_goodbye
+

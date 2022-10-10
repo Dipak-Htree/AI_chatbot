@@ -118,7 +118,7 @@ nlu:
     - [D](agency_list)
 
 
-- intent: property_type
+- intent: ask_about_property_type
   examples: |
     - is this property a [villa](house_type)?
     - Does this property is a [villa](house_type) type?
@@ -153,18 +153,19 @@ nlu:
     - [p1](chosen_property)
     - [p2](chosen_property)
 
-- intent: property_floorplan
+- intent: ask_property_floorplan
   examples: |
     - What is the floorplan for this property?
     - floorplan layout 
     - Do you have floorplan layout?
     - Can you give me property floorplan?
 
-- intent: property_bedroom
+- intent: ask_property_bedroom
   examples: |
     - How many bedroom are there?
     - Total how many bedroom does this property have?
     - how many bedroom
+    - does this property has bedroom
 
 - intent: ask_property_address
   examples: |
@@ -331,6 +332,7 @@ nlu:
     - what are the attractions of the property?
     - please provide the attracting features of the flats?
     - please provide the attracting features of the apartments?
+    - what are the facilities that comes with this property?
     
 
 - intent: ask_about_property_descriptions
@@ -419,9 +421,9 @@ nlu:
     - Does the bedroom door have locks?
     - How many wardrobes does each bedroom have?
 
+
 - intent: ask_about_bathroom
   examples: |
-    - what is the bathroom size
     - Does the bathroom contain the bath and the toilet or are they separate?
     - Does the bathroom have bath or shower?
     - What is the bathroom square meter?
@@ -491,3 +493,40 @@ nlu:
     - show me dining room info?
     - does this property has dining room?
   
+- intent: ask_about_room_size
+  examples: |
+    - what is the size of [bedroom](room_size) (in meter) it has?
+    - what is the size of [bathroom](room_size) (in feet) it has ?
+    - which size [bedroom](room_size) have?
+    - size of [bathroom](room_size)?
+    - size of [bedroom](room_size)?
+    - what is size of [bathroom](room_size) you have?
+    - what is the size of [dining room](room_size) this property has?
+    - what is size of [lounge](room_size)?
+    - what is the size of [rear garden](room_size) it has?
+    - How many square meters each [bedroom](room_size) is?
+    - How many square feet the [bedroom](room_size) is?
+
+- intent: inform_agency_directly_agency
+  examples: |
+    - Why has it been in the market for that long?
+    - Is it a house share?
+    - Is the house newly refurbished?
+    - Is the landlord willing to refurbish the house?
+    - Is the landlord manging the property?
+
+- intent: ask_about_style_of_building
+  examples: |
+    - what is the style of this apartment?
+    - what is the style of this building?
+    - style of this flat?
+    - which style this house has?
+    - What is the style of the flat?
+
+
+- intent: ask_about_glass_window
+  examples: |
+    - does the room have normal glass window?
+    - Does the room have double glassed window?
+    - Does the room have triple glassed window?
+    - What is the room’s window material from?

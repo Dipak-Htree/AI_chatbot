@@ -15,11 +15,11 @@ intents:
 - take_email
 - informpropertylist
 - informbudget
-- property_type
+- ask_about_property_type
 - inform_agency_list
 - inform_explore_property
-- property_floorplan
-- property_bedroom
+- ask_property_floorplan
+- ask_property_bedroom
 - ask_parking
 - ask_property_address
 - ask_garden
@@ -51,6 +51,10 @@ intents:
 - ask_about_living_room
 - ask_about_entrance_hall_info
 - ask_about_dining_room_info
+- ask_about_room_size
+- inform_agency_directly_agency
+- ask_about_style_of_building
+- ask_about_glass_window
 
 entities:
 - choice_locality
@@ -65,6 +69,7 @@ entities:
 - house_type
 - sale_rent
 - feature
+- room_size
 
 
 slots:
@@ -155,12 +160,20 @@ slots:
     - p1
     - p2
     - p2
+
   house_type:
     type: text
     influence_conversation: true
     mappings:
     - type: from_entity
       entity: house_type
+  
+  room_size:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: room_size
 
 responses:
   utter_goodbye:
@@ -301,6 +314,10 @@ actions:
 - action_check_living_room
 - action_check_entrance_hall_info
 - action_check_about_dining_room
+- action_check_about_room_size
+- action_inform_directly_agency
+- action_check_about_style_of_building
+- action_check_about_glass_window
 - my_fallback_action
 
 
