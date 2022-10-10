@@ -18,13 +18,13 @@ action_endpoint:
 # By default the conversations are stored in memory.
 # https://rasa.com/docs/rasa/tracker-stores
 
-tracker_store:
-   type: SQL
-   dialect: 'mysql+pymysql'
-   url: 'localhost'
-   db: 'rasa'
-   username: 'root'
-   password: 'root'
+# tracker_store:
+#    type: SQL
+#    dialect: 'mysql+pymysql'
+#    url: 'localhost'
+#    db: 'rasa'
+#    username: 'root'
+#    password: 'root'
 
 
 

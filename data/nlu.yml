@@ -165,6 +165,7 @@ nlu:
     - How many bedroom are there?
     - Total how many bedroom does this property have?
     - how many bedroom
+    - how many bedroom's are occupied?
 
 - intent: ask_property_address
   examples: |
@@ -189,6 +190,7 @@ nlu:
     - Is this building have garden?
     - Garden ?
     - Is there any garden?
+    - what is the size of garden?
 
 - intent: ask_website_link
   examples: |
@@ -228,9 +230,12 @@ nlu:
 - intent: ask_house_type_info
   examples: |
     - What is the house type
+    - what is the style of house?
+    - what is the style of flat?
     - house type for this property
     - show me what type of house this?
     - house type
+    - is the house victorian style?
 
 - intent: inform_answer_ask_help
   examples: |
@@ -491,3 +496,11 @@ nlu:
     - show me dining room info?
     - does this property has dining room?
   
+- intent: ask_about_balcony
+  examples: |
+    - what is the size of balcony?
+
+- intent: ask_about_terrace
+  examples: |
+    - what is the size of terrace?
+

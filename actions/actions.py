@@ -39,27 +39,44 @@ tokenizer = BertTokenizer.from_pretrained('bert-large-uncased-whole-word-masking
 
 data = pd.read_csv('Excel_File/mainData.csv')
 
+property_detail = ''
+scrape_data = None
+
+
+
+
 class Information(Action):
+    
     def __init__(self, property_detail = '') -> None:
-        self.property_detail = property_detail
+        property_detail = property_detail
         
     def name(self) -> Text:
         return "action_information"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        global property_detail
+        global scrape_data
         print('action_information')
         chosen_property = tracker.get_slot('chosen_property')
-        self.property_detail = data.iloc[int(chosen_property)]
-        return self.property_detail
+        property_detail = data.iloc[int(chosen_property)]
+        
 
-    def scrapeData(self):
-        link = self.property_detail['websiteLink']
-        page = requests.get(link)
-        soup = BeautifulSoup(page.content, "html.parser")
-        for iter in soup(['style', 'script']):
-            iter.decompose()
-        self.scrape_data = ' '.join(soup.stripped_strings)
-        return self.scrape_data
+
+        if scrape_data is None:
+            
+            print("scraping ...")
+            link = property_detail['websiteLink']
+            page = requests.get(link)
+            soup = BeautifulSoup(page.content, "html.parser")
+            for iter in soup(['style', 'script']):
+                iter.decompose()
+            scrape_data = ' '.join(soup.stripped_strings)
+            
+        
+        return property_detail
+
+
+
 
     def search_query(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any], q, context) -> List[Dict[Text, Any]]:
         # model_name = "deepset/roberta-base-squad2"
@@ -130,9 +147,8 @@ class CheckVillaType(Information):
         print('action_check_house_type')
         super().run(dispatcher, tracker, domain)
         
-        house_type = self.property_detail['houseType']
-        print("house type", type(house_type))
-        q_house_type = tracker.get_slot('house_type')
+        house_type = property_detail['houseType'].lower()
+        q_house_type = tracker.get_slot('house_type').lower()
         try:
             if math.isnan(house_type) :
                 dispatcher.utter_message(text=f"Sorry, we don't have this information.")
@@ -143,9 +159,9 @@ class CheckVillaType(Information):
             embeddings2 = model.encode(q_house_type, convert_to_tensor=True)
             cosine_scores = util.cos_sim(embeddings1, embeddings2)
             print(cosine_scores)
-            if cosine_scores[0][0].item() > 0.50:
+            if cosine_scores[0][0].item() >= 0.40:
                 dispatcher.utter_message(text=f"This property is {house_type}")
-            elif cosine_scores[0][0].item() < 0.50:
+            elif cosine_scores[0][0].item() < 0.40:
                 dispatcher.utter_message(text=f"No, This property is {house_type}")
            
         return []
@@ -161,9 +177,9 @@ class CheckFloorPlan(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_property_floorplan')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['floorplanLayout'] == 'yes': 
-            dispatcher.utter_message(text=f"{self.property_detail['floorplanLayout']}")
-        elif self.property_detail['floorplanLayout'] == 'no':
+        if property_detail['floorplanLayout'] == 'yes': 
+            dispatcher.utter_message(text=f"{property_detail['floorplanLayout']}")
+        elif property_detail['floorplanLayout'] == 'no':
             dispatcher.utter_message(text=f"No, ")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
@@ -180,8 +196,8 @@ class CheckBedroomNumber(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_bedroom')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['bedroom'] is not None:
-            dispatcher.utter_message(text=f"There are total of {self.property_detail['bedroom']}")
+        if property_detail['bedroom'] is not None:
+            dispatcher.utter_message(text=f"There are total of {property_detail['bedroom']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -197,9 +213,9 @@ class CheckLocation(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_show_property_address')
         super().run(dispatcher, tracker, domain)
-        print(self.property_detail['propertyAddress'])
-        if self.property_detail['propertyAddress'] is not None: 
-            dispatcher.utter_message(text=f"Here is the address for this property.\n{self.property_detail['propertyAddress']}")
+        print(property_detail['propertyAddress'])
+        if property_detail['propertyAddress'] is not None: 
+            dispatcher.utter_message(text=f"Here is the address for this property.\n{property_detail['propertyAddress']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -214,14 +230,14 @@ class CheckParking(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_show_parking')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['parkingSpace'] == 'yes': 
+        if property_detail['parkingSpace'] == 'yes': 
             dispatcher.utter_message(text=f"Yes, it includes parking.")
-        elif self.property_detail['parkingSpace'] == 'no':
+        elif property_detail['parkingSpace'] == 'no':
             dispatcher.utter_message(text=f"No, it does not includes parking.")
         else:
-            super().scrapeData()
+            ()
             q = "Does this property has parking space?"
-            res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+            res= super().search_query(dispatcher, tracker, domain, q, scrape_data)
             q = tracker.latest_message["text"]
             # final_res = super().search_query(dispatcher, tracker, domain, q, res[0]['answer'])
             # print(res[0], "\n", final_res[0])
@@ -257,7 +273,7 @@ class CheckGarden(Information):
         print('action_show_garden')
         super().run(dispatcher, tracker, domain)
 
-        if ("garden" in self.property_detail['keyFeatures']) or ("garden" in self.property_detail['propertyDescriptions']) : 
+        if ("garden" in property_detail['keyFeatures']) or ("garden" in property_detail['propertyDescriptions']) : 
             dispatcher.utter_message(text=f"Yes, it includes garden.")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
@@ -273,8 +289,8 @@ class CheckWebsiteLink(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_show_website_link')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['websiteLink']: 
-            dispatcher.utter_message(text=f"Yes, Here is the link for property, \n{self.property_detail['websiteLink']}")
+        if property_detail['websiteLink']: 
+            dispatcher.utter_message(text=f"Yes, Here is the link for property, \n{property_detail['websiteLink']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -289,9 +305,9 @@ class CheckPetInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_show_pet_info')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['petsAllowed'] == 'yes': 
+        if property_detail['petsAllowed'] == 'yes': 
             dispatcher.utter_message(text=f"Yes, it includes pets.")
-        elif self.property_detail['petsAllowed'] == 'no':
+        elif property_detail['petsAllowed'] == 'no':
             dispatcher.utter_message(text=f"No, it does not includes pets.")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
@@ -307,7 +323,7 @@ class CheckReceptionInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_reception_info')
         super().run(dispatcher, tracker, domain)
-        if ("reception" in self.property_detail['keyFeatures']) or ("reception" in self.property_detail['propertyDescriptions']) : 
+        if ("reception" in property_detail['keyFeatures']) or ("reception" in property_detail['propertyDescriptions']) : 
             dispatcher.utter_message(text=f"Yes, it includes reception.")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
@@ -324,7 +340,7 @@ class CheckBathroomInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_bathroom_info')
         super().run(dispatcher, tracker, domain)
-        bathroom = self.property_detail['bathroom']
+        bathroom = property_detail['bathroom']
         try:
             if math.isnan(bathroom) :
                 dispatcher.utter_message(text=f"Sorry, we don't have this information.")
@@ -346,8 +362,8 @@ class CheckFeaturesInfo(Information):
         print('action_check_features')
         feature = tracker.latest_message['entities'][0]['value']
         if feature == 'facilities':
-            dispatcher.utter_message(text=f"{self.property_detail['keyFeatures']}")
-        elif (feature in self.property_detail['keyFeatures']) or (feature in self.property_detail['propertyDescriptions']):
+            dispatcher.utter_message(text=f"{property_detail['keyFeatures']}")
+        elif (feature in property_detail['keyFeatures']) or (feature in property_detail['propertyDescriptions']):
             dispatcher.utter_message(text=f"Yes, This property includes {feature}")
         else:
             dispatcher.utter_message(text=f"No, This property does not includes {feature}")
@@ -374,7 +390,7 @@ class ChecksmokingInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_smoking')
         super().run(dispatcher, tracker, domain)
-        if ("smoking" in self.property_detail['keyFeatures'].lower()) or ("smoking" in self.property_detail['propertyDescriptions'].lower()) : 
+        if ("smoking" in property_detail['keyFeatures'].lower()) or ("smoking" in property_detail['propertyDescriptions'].lower()) : 
             dispatcher.utter_message(text=f"Yes, smoking is allowed")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
@@ -389,11 +405,11 @@ class CheckLiftInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_lift')
         super().run(dispatcher, tracker, domain)
-        if ("lift" in self.property_detail['keyFeatures'].lower()) or ("lift" in self.property_detail['propertyDescriptions'].lower()) : 
+        if ("lift" in property_detail['keyFeatures'].lower()) or ("lift" in property_detail['propertyDescriptions'].lower()) : 
             dispatcher.utter_message(text=f"Yes, it includes lift.")
         else:
-            super().scrapeData()
-            if ("lift" in self.scrape_data.lower()):
+            ()
+            if ("lift" in scrape_data.lower()):
                 dispatcher.utter_message(text=f"Yes, it includes lift.")
             else:
                 dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
@@ -410,8 +426,8 @@ class CheckMapLinkInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_map_link_for_property')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['mapLink'] is not None: 
-            dispatcher.utter_message(text=f"Here is map link for this property.\n{self.property_detail['mapLink']}")
+        if property_detail['mapLink'] is not None: 
+            dispatcher.utter_message(text=f"Here is map link for this property.\n{property_detail['mapLink']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -426,9 +442,9 @@ class CheckTenureInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_property_tenure')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['tenure'] is not None: 
-            if 'ask agent' not in self.property_detail['tenure']:
-                dispatcher.utter_message(text=f"Here is the property tenure.\n{self.property_detail['tenure']}")
+        if property_detail['tenure'] is not None: 
+            if 'ask agent' not in property_detail['tenure']:
+                dispatcher.utter_message(text=f"Here is the property tenure.\n{property_detail['tenure']}")
             else:
                 dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         else:
@@ -446,8 +462,8 @@ class CheckLettingDetailInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_letting_details')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['lettingDetails'] is not None: 
-            dispatcher.utter_message(text=f"Here is the letting details for this property.\n{self.property_detail['lettingDetails']}")
+        if property_detail['lettingDetails'] is not None: 
+            dispatcher.utter_message(text=f"Here is the letting details for this property.\n{property_detail['lettingDetails']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -463,8 +479,8 @@ class CheckKeyFeatureInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_key_features')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['keyFeatures'] is not None: 
-            dispatcher.utter_message(text=f"Here is key features for this property.\n{self.property_detail['keyFeatures']}")
+        if property_detail['keyFeatures'] is not None: 
+            dispatcher.utter_message(text=f"Here is key features for this property.\n{property_detail['keyFeatures']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -480,8 +496,8 @@ class CheckPropertyDescriptionInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_property_descriptions')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['propertyDescriptions'] is not None: 
-            dispatcher.utter_message(text=f"Here is the property descriptions.\n{self.property_detail['propertyDescriptions']}")
+        if property_detail['propertyDescriptions'] is not None: 
+            dispatcher.utter_message(text=f"Here is the property descriptions.\n{property_detail['propertyDescriptions']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -497,8 +513,8 @@ class CheckCouncilTaxInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_council_tax')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['councilTax'] is not None: 
-            dispatcher.utter_message(text=f"Here is the council tax info for this property.\n{self.property_detail['councilTax']}")
+        if property_detail['councilTax'] is not None: 
+            dispatcher.utter_message(text=f"Here is the council tax info for this property.\n{property_detail['councilTax']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -514,8 +530,8 @@ class CheckAgentNameInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_agent_name')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['agencyName'] is not None: 
-            dispatcher.utter_message(text=f"Here is the agency name for this property.\n{self.property_detail['agencyName']}")
+        if property_detail['agencyName'] is not None: 
+            dispatcher.utter_message(text=f"Here is the agency name for this property.\n{property_detail['agencyName']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -532,8 +548,8 @@ class CheckAgentAddressInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_agent_address')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['agencyAddress'] is not None: 
-            dispatcher.utter_message(text=f"Here is the agency address for this property.\n{self.property_detail['agencyAddress']}")
+        if property_detail['agencyAddress'] is not None: 
+            dispatcher.utter_message(text=f"Here is the agency address for this property.\n{property_detail['agencyAddress']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -548,8 +564,8 @@ class CheckAgentDescriptionInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_agent_decriptions')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['agencyDescription'] is not None: 
-            dispatcher.utter_message(text=f"Here is the agency description for this property.\n{self.property_detail['agencyDescription']}")
+        if property_detail['agencyDescription'] is not None: 
+            dispatcher.utter_message(text=f"Here is the agency description for this property.\n{property_detail['agencyDescription']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -566,8 +582,8 @@ class CheckPropertyAddedInfo(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('check_about_how_long_property_been_on_market')
         super().run(dispatcher, tracker, domain)
-        super().scrapeData()
-        x = re.search("(added on \d{2}(\/|-)\d{2}(\/|-)\d{2,4})", self.scrape_data.lower())
+        ()
+        x = re.search("(added on \d{2}(\/|-)\d{2}(\/|-)\d{2,4})", scrape_data.lower())
         if x is not None:
             dispatcher.utter_message(text=f"The property is listed on the market for .\n{x.group(0)}")
         else:
@@ -587,8 +603,8 @@ class CheckPropertyCost(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_property_cost')
         super().run(dispatcher, tracker, domain)
-        if self.property_detail['propertyPrice'] is not None: 
-            dispatcher.utter_message(text=f"Here is the property cost.\n{self.property_detail['propertyPrice']}")
+        if property_detail['propertyPrice'] is not None: 
+            dispatcher.utter_message(text=f"Here is the property cost.\n{property_detail['propertyPrice']}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
@@ -603,16 +619,16 @@ class CheckBedroomDescription(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_bedroom_info')
         super().run(dispatcher, tracker, domain)
-        super().scrapeData()
+        ()
         
         
 
 
 
         q = "show me bedroom information?"
-        res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        res= super().search_query(dispatcher, tracker, domain, q, scrape_data)
         q = tracker.latest_message["text"]
-        final_res = super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        final_res = super().search_query(dispatcher, tracker, domain, q, scrape_data)
         print(res[0], "\n", final_res[0])
         if final_res[0]['score'] >= 0.01:
             dispatcher.utter_message(text=f"{final_res[0]['answer']}")
@@ -631,10 +647,10 @@ class BathroomDescription(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_bathroom')
         super().run(dispatcher, tracker, domain)
-        super().scrapeData()
+        ()
         
         q = "show me bathroom information?"
-        res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        res= super().search_query(dispatcher, tracker, domain, q, scrape_data)
         q = tracker.latest_message["text"]
         final_res = super().search_query(dispatcher, tracker, domain, q, res[0]['answer'])
         print(res[0], "\n", final_res[0])
@@ -642,7 +658,7 @@ class BathroomDescription(Information):
 
         lines = []
         nlp = spacy.load("en_core_web_md")
-        doc = nlp(self.scrape_data)
+        doc = nlp(scrape_data)
         for sent in doc.sents:
             lines.append(sent.text)
         final_data = []
@@ -684,9 +700,9 @@ class CheckKitchen(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_kitchen')
         super().run(dispatcher, tracker, domain)
-        super().scrapeData()
+        ()
         q = "show me kitchen information?"
-        res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        res= super().search_query(dispatcher, tracker, domain, q, scrape_data)
         q = tracker.latest_message["text"]
         # print(res[0])
         final_res = super().search_query(dispatcher, tracker, domain, q, res[0]['answer'])
@@ -725,10 +741,10 @@ class CheckLivingRoomDescription(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_living_room')
         super().run(dispatcher, tracker, domain)
-        super().scrapeData()
+        ()
         
         q = "show me living room information?"
-        res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        res= super().search_query(dispatcher, tracker, domain, q, scrape_data)
         q = tracker.latest_message["text"]
         final_res = super().search_query(dispatcher, tracker, domain, q, res[0]['answer'])
         print(res[0], "\n", final_res[0])
@@ -750,10 +766,10 @@ class CheckEntranceHall(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_entrance_hall_info')
         super().run(dispatcher, tracker, domain)
-        super().scrapeData()
+        ()
         
         q = "show me entrance hall information?"
-        res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        res= super().search_query(dispatcher, tracker, domain, q, scrape_data)
         q = tracker.latest_message["text"]
         final_res = super().search_query(dispatcher, tracker, domain, q, res[0]['answer'])
         print(res[0], "\n", final_res[0])
@@ -776,10 +792,10 @@ class CheckDiningRoom(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_about_dining_room')
         super().run(dispatcher, tracker, domain)
-        super().scrapeData()
+        ()
         
         q = "Show me dining room information?"
-        res= super().search_query(dispatcher, tracker, domain, q, self.scrape_data)
+        res= super().search_query(dispatcher, tracker, domain, q, scrape_data)
         q = tracker.latest_message["text"]
         final_res = super().search_query(dispatcher, tracker, domain, q, res[0]['answer'])
         print(res[0], "\n", final_res[0])
@@ -809,10 +825,10 @@ class FallBack(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('my_fallback_action')
         super().run(dispatcher, tracker, domain)
-        super().scrapeData()
+        ()
 
         q = tracker.latest_message["text"]
-        res = super().search_query(dispatcher, tracker, domain,q, self.scrape_data)
+        res = super().search_query(dispatcher, tracker, domain,q, scrape_data)
         
         print(res[0])
         if res[0]['score'] > 0.10:
