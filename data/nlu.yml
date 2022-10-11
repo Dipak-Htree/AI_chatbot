@@ -223,8 +223,10 @@ nlu:
   examples: |
     - How many bathroom are there?
     - Does this property includes any type of bathroom?
+    - does this property has bathroom?
     - bathroom
     - How many bathrooms does the property have?
+    - How many bathroom does the property have?
 
 - intent: ask_house_type_info
   examples: |
@@ -514,6 +516,8 @@ nlu:
     - Is the house newly refurbished?
     - Is the landlord willing to refurbish the house?
     - Is the landlord manging the property?
+    - What does the kitchen contain?
+    - How much storage does the kitchen have?
 
 - intent: ask_about_style_of_building
   examples: |
@@ -530,3 +534,24 @@ nlu:
     - Does the room have double glassed window?
     - Does the room have triple glassed window?
     - What is the room’s window material from?
+    - what is the safety of the windows?
+
+- intent: ask_about_shower
+  examples: |
+    - Is the shower a normal one or a walk-in shower?
+    - What type of shower it has?
+    - is the shower is normal one?
+    - does it has walk in shower?
+
+- intent: ask_about_images
+  examples: |
+    - show me images related to this property?
+    - do you have any images for this property?
+    - show me images for this flat
+
+- intent: ask_floorplan_layout
+  examples: |
+    - show me floorplan related to this property?
+    - do you have floorplan of this property?
+
+  

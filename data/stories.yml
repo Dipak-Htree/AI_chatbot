@@ -216,3 +216,18 @@ stories:
   - intent: goodbye
   - action: utter_goodbye
 
+- story: ask_about_shower
+  steps:
+  - intent: ask_about_shower
+  - action: action_check_about_shower
+
+- story: show images to user
+  steps:
+  - intent: ask_about_images
+  - action: action_show_images
+
+
+- story: show floorplan layout
+  steps: 
+  - intent: ask_floorplan_layout
+  - action: action_check_floorplan_layout

@@ -29,18 +29,18 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import torch
+import os
 from transformers import BertForQuestionAnswering
 from transformers import BertTokenizer
+from transformers import XLMRobertaTokenizer, XLMRobertaXLModel
 # from keytotext import pipeline as keytotext_pipeline
 # keytotext_nlp = keytotext_pipeline("k2t-base")
 # keytotext_params = {"do_sample":True, "num_beams":4, "no_repeat_ngram_size":3, "early_stopping":True} 
-
-#Model
+# use_auth_token='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'
 model = BertForQuestionAnswering.from_pretrained('bert-large-uncased-whole-word-masking-finetuned-squad')
-
-#Tokenizer
 tokenizer = BertTokenizer.from_pretrained('bert-large-uncased-whole-word-masking-finetuned-squad')
-
+# tokenizer = XLMRobertaTokenizer.from_pretrained("xlm-roberta-xlarge", use_auth_token=True)
+# model = XLMRobertaXLModel.from_pretrained("xlm-roberta-xlarge", use_auth_token=True)
 
 data = pd.read_csv('Excel_File/mainData.csv')
 
@@ -289,7 +289,13 @@ class CheckGarden(Information):
         if ("garden" in property_detail['keyFeatures']) or ("garden" in property_detail['propertyDescriptions']) : 
             dispatcher.utter_message(text=f"Yes, it includes garden.")
         else:
-            dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
+            q = tracker.latest_message["text"]
+            a = super().search_query(dispatcher, tracker, domain, q, scrape_data)
+            print(a)
+            if a[0]['score'] > 0.01:
+                dispatcher.utter_message(text=f"{a[0]['answer']}")
+            else:
+                dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
         return []
 
 class CheckWebsiteLink(Information):
@@ -659,7 +665,6 @@ class CheckBedroomDescription(Information):
         q = tracker.latest_message["text"]
         final_res = super().search_query(dispatcher, tracker, domain, q, property_detail['propertyDescriptions'])
         print( final_res[0])
-        print(final_data)
         if final_res[0]['score'] >= 0.01:
             dispatcher.utter_message(text=f"{final_res[0]['answer']}")
         else:
@@ -711,6 +716,8 @@ class BathroomDescription(Information):
 
         if final_res[0]['score'] >= 0.01:
             dispatcher.utter_message(text=f"{final_res[0]['answer']}")
+        elif answer:
+            dispatcher.utter_message(text=f"{answer}")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have that info.")
         return []
@@ -902,7 +909,7 @@ class CheckDiningRoom(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_about_glass_window')
         q = tracker.latest_message["text"]
-        q = 'Which type of glass window this property has?'
+        q = 'what type of window it has?'
         a = super().search_query(dispatcher, tracker, domain, q, scrape_data)
         print(a)
         if a[0]['score'] > 0.01:
@@ -912,6 +919,56 @@ class CheckDiningRoom(Information):
         return []
 
 
+class CheckShowerInfo(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_about_shower"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_about_shower')
+        q = tracker.latest_message["text"]
+        q = 'what type of shower it has?'
+        a = super().search_query(dispatcher, tracker, domain, q, scrape_data)
+        print(a)
+        if a[0]['score'] > 0.01:
+            dispatcher.utter_message(text=f"{a[0]['answer']}")
+        else:
+            dispatcher.utter_message(text=f"Sorry, we don't have that info. We wi'll  informing this to agency, they will shortly connect with you.")
+        return []
+
+class CheckShowerInfo(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_show_images"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_show_images')
+        image_list = os.listdir('Jupyter_Notebook_Test/images')
+        for iter in image_list:
+            if ('flp' not in iter.lower()) and ('logo' not in iter.lower()):
+                # print(f"./images/{iter}")
+                dispatcher.utter_message(image=f"./Jupyter_Notebook_Test/images/{iter}")
+        return []
+
+
+class CheckShowerInfo(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_floorplan_layout"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_floorplan_layout')
+        image_list = os.listdir('Jupyter_Notebook_Test/images')
+        for iter in image_list:
+            if ('flp' in iter.lower()) :
+                dispatcher.utter_message(image=f"./Jupyter_Notebook_Test/images/{iter}")
+        return []
 
  
 class FallBack(Information):
@@ -924,8 +981,6 @@ class FallBack(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('my_fallback_action')
         super().run(dispatcher, tracker, domain)
-        
-
         q = tracker.latest_message["text"]
         if q == '':
             dispatcher.utter_message(text='Please, enter your question here.')

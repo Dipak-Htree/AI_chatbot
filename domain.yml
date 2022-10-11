@@ -55,6 +55,9 @@ intents:
 - inform_agency_directly_agency
 - ask_about_style_of_building
 - ask_about_glass_window
+- ask_about_shower
+- ask_about_images
+- ask_floorplan_layout 
 
 entities:
 - choice_locality
@@ -318,6 +321,9 @@ actions:
 - action_inform_directly_agency
 - action_check_about_style_of_building
 - action_check_about_glass_window
+- action_check_about_shower
+- action_show_images
+- action_check_floorplan_layout
 - my_fallback_action
 
 
