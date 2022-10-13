@@ -2,16 +2,11 @@ version: "3.1"
 
 rules:
 
-- rule: after name, ask email
+- rule: after greet, ask for help
   steps:
   - intent: take_name
-  - action: utter_email
-
-- rule: after email, ask property
-  steps:
-  - intent: take_email
-  - action: utter_detail_varification
   - action: utter_ask_help
+
 
 - rule: after ask help, show property
   steps:

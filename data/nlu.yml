@@ -166,10 +166,13 @@ nlu:
     - Total how many bedroom does this property have?
     - how many bedroom
     - does this property has bedroom
+    - number of bedrooms in this house?
+    - number of rooms
 
 - intent: ask_property_address
   examples: |
-    - CAn you show me address for this porperty?
+    - Can you show me address for this porperty?
+    - what is the address of this property?
     - show me address?
     - what is the property address
     - address
@@ -234,6 +237,8 @@ nlu:
     - house type for this property
     - show me what type of house this?
     - house type
+    - what is the type of house
+    - what type of property is this ?
 
 - intent: inform_answer_ask_help
   examples: |
@@ -343,7 +348,8 @@ nlu:
     - can you please provide the details of the property
     - Give the property information for my reference
     - drill down of the property
-    
+    - show me property detail
+    - what is the property details ?
 
 - intent: ask_about_council_tax
   examples: |
@@ -399,7 +405,8 @@ nlu:
   examples: |
     - How long has this property been on the sales market for?
     - How long has this property been on the letting market for?
-
+    - when does these property added on website    
+    - when does this property avalible on site?    
 
 
 - intent: ask_property_cost
@@ -553,5 +560,79 @@ nlu:
   examples: |
     - show me floorplan related to this property?
     - do you have floorplan of this property?
+    - show me floorplan image
+
+
+- intent: ask_energy_rating
+  examples: |
+    - What is the energy rating for the flat?
+    - What is the energy rating for the apratment?
+    - What is the energy rating for the property?
+    - Energy rating?
+
+- intent: ask_total_floor_area
+  examples: |
+    - What is the total floor area of the property?
+    - Total floor area of the apartment?
+    - Total floor area of the floor?
+    - Total floor area?
+    - Total area?
+    
+- intent: ask_certificate_number
+  examples: |
+    - Send me the certificate number for the property
+    - Please provide the certificate number for the property
+    - Send me the certificate number for the apartment
+    - Please provide the certificate number for the apratment
+    - Send me the certificate number for the flat
+    - Please provide the certificate number for the flat
+    - what is the certificate number 
+   
+- intent: ask_postal_code
+  examples: |
+    - What is the postal code for the address?
+    - What is the postal code for the property?
+    - Send me the postal code for the apartment
+    - Send me the postal code for the flat
+    - Postal Code
+    - what is the post code for this property
+
+- intent: ask_validity_of_certificate
+  examples: |
+    - What is the validity of certificate
+    - When will the energy certificate will expire
+    - Expiry of the energy certificate
+
+- intent: ask_local_authority
+  examples: |
+    - Who is the local authority for the property?
+    - Who is the local authority for the flat?
+    - Who is the local authority for the apartment?
+    - Local authority
+
+- intent: ask_council_tax_band
+  examples: |
+    - What is the Council Tax band for the flat?
+    - What is the Council Tax band for the apratment?
+    - What is the Council Tax band for the property?
+
+    
+- intent: ask_local_authority_reference_number
+  examples: |
+    - What is the local authority reference number?
+    - Send me the local authority reference number?
+    - Local authority reference number?
+    
+- intent: ask_court_code
+  examples: |
+    - Does the property has any court code?
+    - What is the court code for the property?
+    - What is the court code for the flat?
+    - What is the court code for the apartment?
+    - Court Code
+
+- intent: ask_improvement_indicator
+  examples: |
+    - Does the property has improvement indicator?
 
   

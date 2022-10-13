@@ -3,6 +3,7 @@ import dis
 from email import contentmanager
 from lib2to3.pgen2 import driver
 from multiprocessing import context
+import numbers
 from sqlite3 import Cursor
 from typing import Dict, Text, Any, List, Optional, final
 import csv
@@ -30,9 +31,11 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import torch
 import os
+import shutil
 from transformers import BertForQuestionAnswering
 from transformers import BertTokenizer
 from transformers import XLMRobertaTokenizer, XLMRobertaXLModel
+from .utils import scraped_images, get_energy_data, get_tax_data
 # from keytotext import pipeline as keytotext_pipeline
 # keytotext_nlp = keytotext_pipeline("k2t-base")
 # keytotext_params = {"do_sample":True, "num_beams":4, "no_repeat_ngram_size":3, "early_stopping":True} 
@@ -61,7 +64,9 @@ def get_data(sender_id):
 
 property_detail = ''
 scrape_data = None
-
+energy_data = None
+tax_data = None
+ 
 class Information(Action):
     def __init__(self, property_detail = '') -> None:
         property_detail = property_detail
@@ -72,6 +77,11 @@ class Information(Action):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         global property_detail 
         global scrape_data
+        global energy_data
+        global tax_data
+        ####
+        postcode = 'HA71FS'
+        number = '36'
         print('action_information')
         sender_id = tracker.current_state()['sender_id']
         # get_data(sender_id)
@@ -87,6 +97,11 @@ class Information(Action):
                 iter.decompose()
             scrape_data = ' '.join(soup.stripped_strings).lower()
 
+        if energy_data is None:
+            energy_data = get_energy_data(postcode, number) 
+        if tax_data is None:
+            tax_data = get_tax_data(postcode, number)
+
         return property_detail
 
     def search_query(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any], q, context) -> List[Dict[Text, Any]]:
@@ -96,7 +111,8 @@ class Information(Action):
         # model_name = 'bert-large-cased-whole-word-masking-finetuned-squad'
         # model_name = 'm3hrdadfi/gpt2-QA'
         # model_name = 'csarron/bert-base-uncased-squad-v1'
-        model_name = "deepset/xlm-roberta-large-squad2"
+        # model_name = "deepset/xlm-roberta-large-squad2"
+        model_name = 'deepset/deberta-v3-large-squad2'
         # model_name = "deepset/xlm-roberta-base-squad2"
         nlp = pipeline('question-answering', model=model_name, tokenizer=model_name)
         QA_input = {
@@ -145,6 +161,63 @@ class Information(Action):
         keywords_dict = get_top_n(tf_idf_score, 5)
         keywords = keywords_dict.keys()
         return list(keywords)
+
+    def get_tax_data(postcode, number):
+        driver = webdriver.Chrome(ChromeDriverManager().install())
+        driver.get("https://www.tax.service.gov.uk/check-council-tax-band/search?_ga=2.95280031.223622977.1663838161-1757065444.1663255247")
+        driver.find_element(By.ID, 'postcode').send_keys(postcode)
+        driver.find_element(By.CLASS_NAME, 'govuk-button').click()
+        
+        true_property = None
+        while true_property is None:
+            properties = driver.find_elements(By.CLASS_NAME, 'govuk-table__row')
+            for iter in properties:
+                if number in iter.text:
+                    true_property = iter.text
+                    iter.click()
+                    break
+            if true_property is None:
+                links = driver.find_elements(By.CLASS_NAME, 'voa-pagination__link')
+                for iter in links:
+                    if 'next' in iter.text.lower():
+                        driver.get(iter.get_attribute('href'))
+
+        url = driver.current_url
+        page = requests.get(url)
+        soup = BeautifulSoup(page.content, "html.parser")
+        tax_scrape_data = ' '.join(soup.stripped_strings)
+        return tax_scrape_data            
+    
+
+
+    def get_energy_data(postcode, number):
+        driver = webdriver.Chrome(ChromeDriverManager().install())
+        driver.get("https://www.gov.uk/find-energy-certificate")
+        driver.find_element(By.XPATH, '//*[@id="get-started"]/a').click()
+
+        driver.find_element(By.XPATH, '//*[@id="domestic"]').click()
+        driver.find_element(By.XPATH, '//*[@id="domestic"]').click()
+        driver.find_element(By.XPATH, '//*[@id="main-content"]/form/fieldset/button').click()
+
+        driver.find_element(By.ID, 'postcode').send_keys(postcode)
+        driver.find_element(By.XPATH, '//*[@id="main-content"]/div/div/form/fieldset/button').click()
+
+        links = driver.find_elements(By.CLASS_NAME, 'govuk-link')
+        for iter in links:
+            if number in iter.text:
+                iter.click()
+                break
+        url = driver.current_url
+        page = requests.get(url)
+        soup = BeautifulSoup(page.content, "html.parser")
+        energy_scrape_data = ' '.join(soup.stripped_strings)
+        return energy_scrape_data
+  
+
+    
+
+    
+    
     if scrape_data == '' and property_detail != '':
         scrapeData()
 
@@ -159,7 +232,7 @@ class CheckVillaType(Information):
         print('action_check_house_type')
         super().run(dispatcher, tracker, domain)
         
-        house_type = property_detail['houseType'].lower()
+        house_type = property_detail['houseType']
         q_house_type = tracker.get_slot('house_type').lower()
         try:
             if math.isnan(house_type) :
@@ -174,7 +247,7 @@ class CheckVillaType(Information):
             if cosine_scores[0][0].item() >= 0.40:
                 dispatcher.utter_message(text=f"This property is {house_type}")
             elif cosine_scores[0][0].item() < 0.40:
-                dispatcher.utter_message(text=f"No, This property is {house_type}")
+                dispatcher.utter_message(text=f"This property is {house_type}")
            
         return []
 
@@ -189,9 +262,9 @@ class CheckFloorPlan(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_property_floorplan')
         super().run(dispatcher, tracker, domain)
-        if property_detail['floorplanLayout'] == 'yes': 
+        if str(property_detail['floorplanLayout']) == 'yes': 
             dispatcher.utter_message(text=f"{property_detail['floorplanLayout']}")
-        elif property_detail['floorplanLayout'] == 'no':
+        elif str(property_detail['floorplanLayout']) == 'no':
             dispatcher.utter_message(text=f"No, ")
         else:
             dispatcher.utter_message(text=f"Sorry, we don't have this information, as soon as we get this information, we'll inform you.")
@@ -208,7 +281,7 @@ class CheckBedroomNumber(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_bedroom')
         super().run(dispatcher, tracker, domain)
-        if property_detail['bedroom'] is not None:
+        if str(property_detail['bedroom']) is not None:
             numbers = re.findall('[0-9]+', property_detail['bedroom'])[0]
 
             dispatcher.utter_message(text=f"There are total of {numbers} bedroom.")
@@ -243,9 +316,9 @@ class CheckParking(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_show_parking')
         super().run(dispatcher, tracker, domain)
-        if property_detail['parkingSpace'] == 'yes': 
+        if str(property_detail['parkingSpace']) == 'yes': 
             dispatcher.utter_message(text=f"Yes, it includes parking.")
-        elif property_detail['parkingSpace'] == 'no':
+        elif str(property_detail['parkingSpace']) == 'no':
             dispatcher.utter_message(text=f"No, it does not includes parking.")
         else:
             
@@ -947,11 +1020,18 @@ class CheckShowerInfo(Information):
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_show_images')
+        
+
+        scraped_images(url = property_detail['websiteLink'], path = f"Jupyter_Notebook_Test/images")
         image_list = os.listdir('Jupyter_Notebook_Test/images')
+        count = 0
         for iter in image_list:
             if ('flp' not in iter.lower()) and ('logo' not in iter.lower()):
-                # print(f"./images/{iter}")
+                count = 1
                 dispatcher.utter_message(image=f"./Jupyter_Notebook_Test/images/{iter}")
+        if count == 0:
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
+        # shutil.rmtree(f"./Jupyter_Notebook_Test/images")
         return []
 
 
@@ -964,10 +1044,207 @@ class CheckShowerInfo(Information):
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_floorplan_layout')
+        scraped_images(url = property_detail['websiteLink'], path = f"Jupyter_Notebook_Test/images")
         image_list = os.listdir('Jupyter_Notebook_Test/images')
+        count = 0
         for iter in image_list:
             if ('flp' in iter.lower()) :
+                count = 1
                 dispatcher.utter_message(image=f"./Jupyter_Notebook_Test/images/{iter}")
+        if count == 0:
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
+        
+        # shutil.rmtree(f"./Jupyter_Notebook_Test/images")
+        return []
+
+
+class CheckShowerInfo(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_energy_rating"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_energy_rating')
+        super().run(dispatcher, tracker, domain)
+        
+
+        q = tracker.latest_message["text"]
+        a = super().search_query(dispatcher, tracker, domain, q, energy_data)
+        print(a)
+        if a[0]['score'] > 0.15:
+            dispatcher.utter_message(text=f"{a[0]['answer']}")
+        else:
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
+        
+        return []
+
+
+class CheckShowerInfo(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_total_floor_area"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_total_floor_area')
+        q = tracker.latest_message["text"]
+        a = super().search_query(dispatcher, tracker, domain, q, energy_data)
+        print(a)
+        if a[0]['score'] > 0.15:
+            dispatcher.utter_message(text=f"{a[0]['answer']}")
+        else:
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
+        return []
+
+class CheckShowerInfo(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_certificate_number"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_certificate_number')
+        q = tracker.latest_message["text"]
+        a = super().search_query(dispatcher, tracker, domain, q, energy_data)
+        print(a)
+        if a[0]['score'] > 0.15:
+            dispatcher.utter_message(text=f"{a[0]['answer']}")
+        else:
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
+        return []
+
+class CheckShowerInfo(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_postal_code"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_postal_code')
+        q = tracker.latest_message["text"]
+        a = super().search_query(dispatcher, tracker, domain, q, energy_data)
+        print(a)
+        if a[0]['score'] > 0.15:
+            dispatcher.utter_message(text=f"{a[0]['answer']}")
+        else:
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
+        return []
+
+class CheckShowerInfo(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_validity_of_certificate"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_validity_of_certificate')
+        q = tracker.latest_message["text"]
+        a = super().search_query(dispatcher, tracker, domain, q, energy_data)
+        print(a)
+        if a[0]['score'] > 0.15:
+            dispatcher.utter_message(text=f"{a[0]['answer']}")
+        else:
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
+        return []
+
+class CheckShowerInfo(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_local_authority"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_local_authority')
+        q = tracker.latest_message["text"]
+        a = super().search_query(dispatcher, tracker, domain, q, tax_data)
+        print(a)
+        if a[0]['score'] > 0.15:
+            dispatcher.utter_message(text=f"{a[0]['answer']}")
+        else:
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
+        return []
+
+class CheckShowerInfo(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_council_tax_band"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_council_tax_band')
+        q = tracker.latest_message["text"]
+        a = super().search_query(dispatcher, tracker, domain, q, tax_data)
+        print(a)
+        if a[0]['score'] > 0.15:
+            dispatcher.utter_message(text=f"{a[0]['answer']}")
+        else:
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
+        return []
+
+class CheckShowerInfo(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_cehck_local_authority_reference_number"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_cehck_local_authority_reference_number')
+        q = tracker.latest_message["text"]
+        a = super().search_query(dispatcher, tracker, domain, q, tax_data)
+        print(a)
+        if a[0]['score'] > 0.15:
+            dispatcher.utter_message(text=f"{a[0]['answer']}")
+        else:
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
+        return []
+
+class CheckShowerInfo(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_court_code"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_court_code')
+        q = tracker.latest_message["text"]
+        a = super().search_query(dispatcher, tracker, domain, q, tax_data)
+        print(a)
+        if a[0]['score'] > 0.15:
+            if 'none' not in a[0]['answer'].lower():
+                dispatcher.utter_message(text=f"{a[0]['answer']}")
+            else:
+                dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")    
+        else:
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
+        return []
+
+
+class CheckShowerInfo(Information):
+    def __init__(self):
+        super().__init__()
+
+    def name(self) -> Text:
+        return "action_check_improvement_indicator"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        print('action_check_improvement_indicator')
+        q = tracker.latest_message["text"]
+        a = super().search_query(dispatcher, tracker, domain, q, tax_data)
+        print(a)
+        if a[0]['score'] > 0.15:
+            dispatcher.utter_message(text=f"{a[0]['answer']}")
+        else:
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
         return []
 
  

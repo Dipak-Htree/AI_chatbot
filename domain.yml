@@ -58,6 +58,16 @@ intents:
 - ask_about_shower
 - ask_about_images
 - ask_floorplan_layout 
+- ask_energy_rating
+- ask_total_floor_area
+- ask_certificate_number
+- ask_postal_code
+- ask_validity_of_certificate
+- ask_local_authority
+- ask_council_tax_band
+- ask_local_authority_reference_number
+- ask_court_code
+- ask_improvement_indicator
 
 entities:
 - choice_locality
@@ -324,6 +334,16 @@ actions:
 - action_check_about_shower
 - action_show_images
 - action_check_floorplan_layout
+- action_check_energy_rating
+- action_check_total_floor_area
+- action_check_certificate_number
+- action_check_postal_code
+- action_validity_of_certificate
+- action_check_local_authority
+- action_check_council_tax_band
+- action_cehck_local_authority_reference_number
+- action_check_court_code
+- action_check_improvement_indicator
 - my_fallback_action
 
 

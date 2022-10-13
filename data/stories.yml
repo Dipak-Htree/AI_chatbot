@@ -5,11 +5,6 @@ stories:
 - story: real estate chatbot
   steps:
   - intent: greet
-  - action: utter_happy_share_ask_name
-  - intent: take_name
-  - action: utter_email
-  - intent: take_email
-  - action: utter_detail_varification
   - action: utter_ask_help
   - intent: inform_answer_ask_help
   - action: utter_show_properties
@@ -68,10 +63,10 @@ stories:
   - intent: ask_bathroom_info
   - action: action_check_bathroom_info
 
-# - story: ask_about_house_type
-#   steps:
-#   - intent: ask_house_type_info
-#   - action: action_check_house_type
+- story: ask_about_house_type
+  steps:
+  - intent: ask_house_type_info
+  - action: action_check_house_type
 
 - story: ask_about_features_reply_them
   steps: 
@@ -231,3 +226,54 @@ stories:
   steps: 
   - intent: ask_floorplan_layout
   - action: action_check_floorplan_layout
+
+
+- story: show energy rating
+  steps:
+    - intent: ask_energy_rating
+    - action: action_check_energy_rating
+
+- story: show total floor area
+  steps:
+    - intent: ask_total_floor_area
+    - action: action_check_total_floor_area
+
+- story: show certificate number
+  steps:
+    - intent: ask_certificate_number
+    - action: action_check_certificate_number
+
+- story: show postal code
+  steps:
+    - intent: ask_postal_code
+    - action: action_check_postal_code
+
+- story: show validity of certificate
+  steps:
+    - intent: ask_validity_of_certificate
+    - action: action_validity_of_certificate
+
+- story: show local authority
+  steps:
+    - intent: ask_local_authority
+    - action: action_check_local_authority
+
+- story: show council tax band
+  steps:
+    - intent: ask_council_tax_band
+    - action: action_check_council_tax_band
+
+- story: show local authority reference number
+  steps:
+    - intent: ask_local_authority_reference_number
+    - action: action_cehck_local_authority_reference_number
+
+- story: show court code 
+  steps:
+    - intent: ask_court_code
+    - action: action_check_court_code
+
+- story: show improvement indicator
+  steps:
+    - intent: ask_improvement_indicator
+    - action: action_check_improvement_indicator
