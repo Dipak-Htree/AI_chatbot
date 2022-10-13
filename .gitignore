@@ -129,6 +129,7 @@ venv.bak/
 dmypy.json
 
 
+venv/
 models/
 **/.rasa
 Jupyter_Notebook_Test/

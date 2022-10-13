@@ -114,6 +114,7 @@ class Information(Action):
         # model_name = "deepset/xlm-roberta-large-squad2"
         model_name = 'deepset/deberta-v3-large-squad2'
         # model_name = "deepset/xlm-roberta-base-squad2"
+        # model_name = 'navteca/deberta‑v3‑base‑squad2'
         nlp = pipeline('question-answering', model=model_name, tokenizer=model_name)
         QA_input = {
             'question': f'{q}',
@@ -1267,6 +1268,6 @@ class FallBack(Information):
         if res[0]['score'] > 0.10:
             dispatcher.utter_message(text=res[0]['answer'])
         else:
-            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform about this to the agency, they will shortly contact you.")
+            dispatcher.utter_message(text="Sorry, we don't have that information. we will inform the agency about this, they will shortly contact you.")
         return []
 
