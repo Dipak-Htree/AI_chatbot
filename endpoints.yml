@@ -19,10 +19,10 @@ action_endpoint:
 # https://rasa.com/docs/rasa/tracker-stores
 
 
-tracker_store:
-   type: SQL
-   dialect: 'sqlite'
-   db: 'rasa.db'
+# tracker_store:
+#    type: SQL
+#    dialect: 'sqlite'
+#    db: 'rasa.db'
 
 
 
@@ -60,5 +60,5 @@ tracker_store:
 #  password: password
 #  queue: queue
 
-# nlg:
-#   url: http://localhost:8000/nlg
+nlg:
+  url: http://localhost:5056/nlg

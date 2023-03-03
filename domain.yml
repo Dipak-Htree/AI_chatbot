@@ -103,6 +103,7 @@ slots:
     - h
     - i
     - j
+
   budget:
     type: categorical
     influence_conversation: true
@@ -114,6 +115,7 @@ slots:
     - bb
     - cc
     - dd
+
   propertylist:
     type: categorical
     influence_conversation: true
@@ -125,6 +127,7 @@ slots:
     - b
     - c
     - d
+
   agency_list:
     type: categorical
     influence_conversation: true
@@ -138,18 +141,21 @@ slots:
     - b1
     - b2
     - b3
+
   name:
     type: text
     influence_conversation: true
     mappings:
     - type: from_entity
       entity: name
+
   email:
     type: text
     influence_conversation: true
     mappings:
     - type: from_entity
       entity: email
+
   choice:
     type: categorical
     influence_conversation: true
@@ -160,6 +166,7 @@ slots:
     - rock
     - paper
     - sci
+
   chosen_property:
     type: categorical
     influence_conversation: true
@@ -188,21 +195,29 @@ slots:
     - type: from_entity
       entity: room_size
 
+
 responses:
+
   utter_goodbye:
   - text: Bye
+
   utter_iamabot:
   - text: I am a bot, powered by Rasa.
+
   utter_play:
   - text: Type 'rock' , 'paper' or 'scissors' to play.
+
   utter_play_again:
   - text: Do you want to play again?
+
   utter_property_headline:
   - text: We see that you are looking to Buy a Flat in Ahmedabad.
+
   utter_locality:
   - text: |-
       Which Locality are you looking to Buy a Property in?
       A] South Bopal	B]Shela	c] SG Highway	D] Bodakdeb	E] Gota	F] Thaltej 	G]Satellite	 H] Prahlad Nagar 	 I]bopal	 J] vastrapur
+  
   utter_budget:
   - buttons:
     - payload: /informbudget{{"budget":"20-40 Lakhs"}}
@@ -214,13 +229,16 @@ responses:
     - payload: /informbudget{{"budget":"More than 80 Lakhs"}}
       title: D] More than 80 Lakhs
     text: Great! Can you share your preferred budget?
+  
   utter_happy_share_ask_name:
   - text: |-
       We are all set to share the Best matching properties with you.
       Please share your details with us. 
       What is your full name?
+  
   utter_email:
   - text: Please share your email address
+  
   utter_property_list:
   - buttons:
     - payload: /informpropertylist{{"propertylist":"abc"}}
@@ -232,10 +250,12 @@ responses:
     - payload: /informpropertylist{{"propertylist":"def"}}
       title: D] def
     text: Looking at your budget and locality, we have list down some properties for you.
+  
   utter_detail_varification:
   - text: |-
       Mr {name}. 
       Thank you for giving your details.
+  
   utter_agency_list:
   - buttons:
     - payload: /inform_agency_list{{"agency_list":"A1"}}
@@ -251,18 +271,22 @@ responses:
     - payload: /inform_agency_list{{"agency_list":"B3"}}
       title: D] Agency B3
     text: Can you please choose on of the agency from below ?
+  
   utter_agency_varification:
   - text: You have chose.
+  
   utter_property_varification:
   - text: |-
       You have selected this {budget}. 
       You have selected this {propertylist}. 
       You have shown interest in this property. #Mention property
+  
   utter_villa:
   - text: yes, this is a villa.
   - text: yes
   - text: No
   - text: No, this is not a villa
+  
   utter_flat:
   - text: Yes, this is a flat
   - text: Yes

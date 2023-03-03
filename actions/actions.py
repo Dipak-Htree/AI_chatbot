@@ -10,7 +10,8 @@ import csv
 from xml.sax.handler import feature_external_ges
 from rasa_sdk import Tracker, Action
 from rasa_sdk.executor import CollectingDispatcher
-from rasa.core.nlg import NaturalLanguageGenerator as nlg
+from rasa.core.nlg.response import TemplatedNaturalLanguageGenerator
+from rasa.core.nlg import NaturalLanguageGenerator 
 from sentence_transformers import SentenceTransformer, util
 import pandas as pd
 import numpy as np
@@ -36,6 +37,12 @@ from transformers import BertForQuestionAnswering
 from transformers import BertTokenizer
 from transformers import XLMRobertaTokenizer, XLMRobertaXLModel
 from .utils import scraped_images, get_energy_data, get_tax_data
+import time 
+from rasa.utils.endpoints import EndpointConfig
+from rasa.core.nlg import CallbackNaturalLanguageGenerator
+nlg_endpoint = EndpointConfig(url="http://localhost:5055/nlg")
+nlg = CallbackNaturalLanguageGenerator(endpoint_config=nlg_endpoint)
+
 # from keytotext import pipeline as keytotext_pipeline
 # keytotext_nlp = keytotext_pipeline("k2t-base")
 # keytotext_params = {"do_sample":True, "num_beams":4, "no_repeat_ngram_size":3, "early_stopping":True} 
@@ -46,6 +53,8 @@ tokenizer = BertTokenizer.from_pretrained('bert-large-uncased-whole-word-masking
 # model = XLMRobertaXLModel.from_pretrained("xlm-roberta-xlarge", use_auth_token=True)
 
 data = pd.read_csv('Excel_File/mainData.csv')
+
+# nlg.generate
 
 def get_data(sender_id):
     import mysql.connector
@@ -232,7 +241,15 @@ class CheckVillaType(Information):
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         print('action_check_house_type')
         super().run(dispatcher, tracker, domain)
-        
+        # nlg = NaturalLanguageGenerator()
+        # generated_response = nlg.generate(
+        #         utter_action="utter_ask_help",
+        #         tracker=tracker,
+        #         output_channel=None
+        #     )
+        time.sleep(5)
+        # print(generated_response, "------------")
+        # print("-----------", generated_response)
         house_type = property_detail['houseType']
         q_house_type = tracker.get_slot('house_type').lower()
         try:
@@ -245,7 +262,10 @@ class CheckVillaType(Information):
             embeddings2 = model.encode(q_house_type, convert_to_tensor=True)
             cosine_scores = util.cos_sim(embeddings1, embeddings2)
             print(cosine_scores)
+            
+            
             if cosine_scores[0][0].item() >= 0.40:
+                
                 dispatcher.utter_message(text=f"This property is {house_type}")
             elif cosine_scores[0][0].item() < 0.40:
                 dispatcher.utter_message(text=f"This property is {house_type}")

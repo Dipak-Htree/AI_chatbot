@@ -15,4 +15,4 @@ run-rasa-server-no-nlg:
 
 run-nlg-server:
 	uvicorn server.nlg:app --host 127.0.0.1 \
-		--port 8000
+		--port 5055
